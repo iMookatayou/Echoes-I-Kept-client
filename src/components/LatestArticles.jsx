@@ -3,6 +3,11 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { Loader2, Search } from 'lucide-react'
 import ArticleCard from './ArticleCard'
+import {
+  getMockPostsByCategory,
+  mockCategories,
+  searchMockPosts,
+} from '../data/mockPosts'
 
 const API_BASE = 'https://blog-post-project-api-with-db.vercel.app'
 
@@ -18,6 +23,7 @@ function LatestArticles() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [categories, setCategories] = useState([])
   const [categoriesLoading, setCategoriesLoading] = useState(true)
+  const [useMockData, setUseMockData] = useState(false)
 
   useEffect(() => {
     axios
@@ -28,6 +34,7 @@ function LatestArticles() {
       })
       .catch((err) => {
         console.error('Error fetching categories:', err)
+        setCategories(mockCategories)
         setCategoriesLoading(false)
       })
   }, [])
@@ -35,38 +42,58 @@ function LatestArticles() {
   useEffect(() => {
     const categoryParam =
       selectedCategory !== 'Highlight'
-        ? `&category=${selectedCategory}`
+        ? `&category=${encodeURIComponent(selectedCategory)}`
         : ''
 
-    axios
-      .get(`${API_BASE}/posts?page=${page}&limit=6${categoryParam}`)
-      .then((res) => {
-        setPosts((prev) =>
-          page === 1 ? res.data.posts : [...prev, ...res.data.posts],
+    let cancelled = false
+
+    const fetchPosts = () => {
+      if (useMockData) {
+        return Promise.resolve(
+          getMockPostsByCategory(selectedCategory, page, 6),
         )
-        setLoading(false)
-        if (res.data.currentPage >= res.data.totalPages) {
-          setHasMore(false)
-        }
-      })
-      .catch(() => {
-        setLoading(false)
-      })
-  }, [page, selectedCategory])
+      }
+      return axios
+        .get(`${API_BASE}/posts?page=${page}&limit=6${categoryParam}`)
+        .then((res) => res.data)
+        .catch(() => {
+          setUseMockData(true)
+          return getMockPostsByCategory(selectedCategory, page, 6)
+        })
+    }
+
+    fetchPosts().then((result) => {
+      if (cancelled) return
+      setPosts((prev) =>
+        page === 1 ? result.posts : [...prev, ...result.posts],
+      )
+      setHasMore(result.currentPage < result.totalPages)
+      setLoading(false)
+    })
+
+    return () => {
+      cancelled = true
+    }
+  }, [page, selectedCategory, useMockData])
 
   useEffect(() => {
     if (keyword.length === 0) return
 
-    axios
-      .get(`${API_BASE}/posts?keyword=${keyword}`)
-      .then((res) => {
-        setSearchResults(res.data.posts)
-        setLoading(false)
-      })
-      .catch(() => {
-        setLoading(false)
-      })
-  }, [keyword])
+    const fetchSearchResults = () => {
+      if (useMockData) {
+        return Promise.resolve(searchMockPosts(keyword))
+      }
+      return axios
+        .get(`${API_BASE}/posts?keyword=${keyword}`)
+        .then((res) => res.data.posts)
+        .catch(() => searchMockPosts(keyword))
+    }
+
+    fetchSearchResults().then((results) => {
+      setSearchResults(results)
+      setLoading(false)
+    })
+  }, [keyword, useMockData])
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category)
@@ -82,6 +109,9 @@ function LatestArticles() {
       month: 'long',
       year: 'numeric',
     })
+
+  const displayCategories = categories.length > 0 ? categories : mockCategories
+  const isInitialLoading = loading && page === 1 && posts.length === 0
 
   return (
     <div className="w-full max-w-7xl mx-auto md:px-6 lg:px-8 mb-20">
@@ -134,7 +164,7 @@ function LatestArticles() {
             className="w-full py-3 rounded-sm text-muted-foreground border border-input bg-background px-3 focus:outline-none focus:border-muted-foreground"
           >
             <option value="Highlight">Highlight</option>
-            {categories.map((cat) => (
+            {displayCategories.map((cat) => (
               <option key={cat.id} value={cat.name}>
                 {cat.name}
               </option>
@@ -165,7 +195,7 @@ function LatestArticles() {
             >
               Highlight
             </button>
-            {categories.map((cat) => (
+            {displayCategories.map((cat) => (
               <button
                 key={cat.id}
                 type="button"
@@ -184,22 +214,32 @@ function LatestArticles() {
         )}
       </div>
 
-      <article className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 md:px-0">
-        {posts.map((post) => (
-          <ArticleCard
-            key={post.id}
-            id={post.id}
-            image={post.image}
-            category={post.category}
-            title={post.title}
-            description={post.description}
-            author={post.author}
-            date={formatDate(post.date)}
-          />
-        ))}
-      </article>
+      {isInitialLoading ? (
+        <div className="flex min-h-60 flex-col items-center justify-center">
+          <Loader2 className="h-10 w-10 animate-spin text-foreground" />
+          <p className="mt-4 font-medium">Loading...</p>
+        </div>
+      ) : posts.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 md:px-0">
+          {posts.map((post) => (
+            <ArticleCard
+              key={post.id}
+              id={post.id}
+              image={post.image}
+              category={post.category}
+              title={post.title}
+              description={post.description}
+              author={post.author}
+              authorAvatar={post.authorAvatar}
+              date={formatDate(post.date)}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="px-4 text-muted-foreground">No articles found.</p>
+      )}
 
-      {hasMore && (
+      {hasMore && !isInitialLoading && (
         <div className="text-center mt-20">
           <button
             type="button"
@@ -211,9 +251,9 @@ function LatestArticles() {
             disabled={loading}
           >
             {loading ? (
-              <div className="flex flex-col items-center min-h-lvh">
-                <Loader2 className="w-12 h-12 animate-spin text-foreground" />
-                <p className="mt-4">Loading...</p>
+              <div className="flex items-center justify-center gap-2 text-muted-foreground">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                <span>Loading...</span>
               </div>
             ) : (
               'View more'

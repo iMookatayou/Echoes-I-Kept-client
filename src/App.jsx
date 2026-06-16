@@ -4,6 +4,7 @@ import GuestRoute from './components/GuestRoute'
 import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import SignUpPage from './pages/SignUpPage'
+import PostDetailPage from './pages/PostDetailPage'
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/post/:postId" element={<PostDetailPage />} />
           <Route
             path="/login"
             element={
