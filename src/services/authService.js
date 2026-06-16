@@ -1,4 +1,4 @@
-import { mockUsers } from '../data/mockUsers'
+import { avatarUrl, mockUsers } from '../data/mockUsers'
 
 const TOKEN_KEY = 'token'
 const USER_KEY = 'mockUser'
@@ -7,7 +7,8 @@ const REGISTERED_USERS_KEY = 'registeredUsers'
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
 function toPublicUser(user) {
-  const { password, ...publicUser } = user
+  const publicUser = { ...user }
+  delete publicUser.password
   return publicUser
 }
 
@@ -66,7 +67,7 @@ export async function signup({ name, username, email, password }) {
     email,
     password,
     role: 'user',
-    profilePic: '/author-image.jpeg',
+    profilePic: avatarUrl(name, '2B6CB0'),
   }
 
   const registered = JSON.parse(

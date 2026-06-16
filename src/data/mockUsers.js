@@ -1,3 +1,9 @@
+export function avatarUrl(name, background = '4A5568') {
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(
+    name,
+  )}&background=${background}&color=fff&size=128&bold=true`
+}
+
 export const mockUsers = [
   {
     id: 1,
@@ -6,7 +12,7 @@ export const mockUsers = [
     email: 'member@test.com',
     password: 'password1',
     role: 'user',
-    profilePic: '/author-image.jpeg',
+    profilePic: avatarUrl('John Member', '4A5568'),
   },
   {
     id: 2,
@@ -16,5 +22,143 @@ export const mockUsers = [
     password: 'admin1234',
     role: 'admin',
     profilePic: '/author-image.jpeg',
+    bio: [
+      'I am a pet enthusiast and freelance writer who specializes in animal behavior and care. With a deep love for cats, I enjoy sharing insights on feline companionship and wellness.',
+      "When I'm not writing, I spend time volunteering at my local animal shelter, helping cats find loving homes.",
+    ],
+  },
+  {
+    id: 3,
+    name: 'Jacob Lash',
+    username: 'jacob_lash',
+    email: 'jacob@test.com',
+    password: 'password1',
+    role: 'user',
+    profilePic: avatarUrl('Jacob Lash', '1A365D'),
+  },
+  {
+    id: 4,
+    name: 'Mina',
+    username: 'mina',
+    email: 'mina@test.com',
+    password: 'password1',
+    role: 'user',
+    profilePic: avatarUrl('Mina', 'DD6B20'),
+  },
+  {
+    id: 5,
+    name: 'James',
+    username: 'james',
+    email: 'james@test.com',
+    password: 'password1',
+    role: 'user',
+    profilePic: avatarUrl('James', '2B6CB0'),
+  },
+  {
+    id: 6,
+    name: 'Sophia',
+    username: 'sophia',
+    email: 'sophia@test.com',
+    password: 'password1',
+    role: 'user',
+    profilePic: avatarUrl('Sophia', '805AD5'),
+  },
+  {
+    id: 7,
+    name: 'Nina',
+    username: 'nina',
+    email: 'nina@test.com',
+    password: 'password1',
+    role: 'user',
+    profilePic: avatarUrl('Nina', '319795'),
+  },
+  {
+    id: 8,
+    name: 'Arun',
+    username: 'arun',
+    email: 'arun@test.com',
+    password: 'password1',
+    role: 'user',
+    profilePic: avatarUrl('Arun', 'D53F8C'),
+  },
+  {
+    id: 9,
+    name: 'Kim',
+    username: 'kim',
+    email: 'kim@test.com',
+    password: 'password1',
+    role: 'user',
+    profilePic: avatarUrl('Kim', '718096'),
+  },
+  {
+    id: 10,
+    name: 'Daniel',
+    username: 'daniel',
+    email: 'daniel@test.com',
+    password: 'password1',
+    role: 'user',
+    profilePic: avatarUrl('Daniel', '2F855A'),
+  },
+  {
+    id: 11,
+    name: 'Emily',
+    username: 'emily',
+    email: 'emily@test.com',
+    password: 'password1',
+    role: 'user',
+    profilePic: avatarUrl('Emily', 'B83280'),
+  },
+  {
+    id: 12,
+    name: 'Mark',
+    username: 'mark',
+    email: 'mark@test.com',
+    password: 'password1',
+    role: 'user',
+    profilePic: avatarUrl('Mark', '1A365D'),
+  },
+  {
+    id: 13,
+    name: 'Lily',
+    username: 'lily',
+    email: 'lily@test.com',
+    password: 'password1',
+    role: 'user',
+    profilePic: avatarUrl('Lily', '38A169'),
+  },
+  {
+    id: 14,
+    name: 'Chris',
+    username: 'chris',
+    email: 'chris@test.com',
+    password: 'password1',
+    role: 'user',
+    profilePic: avatarUrl('Chris', 'C05621'),
+  },
+  {
+    id: 15,
+    name: 'Zoe',
+    username: 'zoe',
+    email: 'zoe@test.com',
+    password: 'password1',
+    role: 'user',
+    profilePic: avatarUrl('Zoe', '6B46C1'),
+  },
+  {
+    id: 16,
+    name: 'Omar',
+    username: 'omar',
+    email: 'omar@test.com',
+    password: 'password1',
+    role: 'user',
+    profilePic: avatarUrl('Omar', '0F766E'),
   },
 ]
+
+export function getMockUserById(userId) {
+  return mockUsers.find((user) => user.id === userId) || null
+}
+
+export function getMockUserByName(name) {
+  return mockUsers.find((user) => user.name === name) || null
+}
