@@ -2,7 +2,7 @@ import { Navigate } from 'react-router-dom'
 import { Loader2 } from 'lucide-react'
 import { useAuth } from '../context/useAuth'
 
-function AdminRoute({ children }) {
+function ProtectedRoute({ children }) {
   const { isAuthenticated, state } = useAuth()
 
   if (state.getUserLoading) {
@@ -18,11 +18,7 @@ function AdminRoute({ children }) {
     return <Navigate to="/login" replace />
   }
 
-  if (state.user?.role !== 'admin') {
-    return <Navigate to="/" replace />
-  }
-
   return children
 }
 
-export default AdminRoute
+export default ProtectedRoute

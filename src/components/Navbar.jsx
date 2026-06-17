@@ -9,7 +9,7 @@ import {
   KeyRound,
   X,
 } from 'lucide-react'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/useAuth'
 
 function Navbar() {
   const navigate = useNavigate()
