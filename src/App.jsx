@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage'
 import SignUpPage from './pages/SignUpPage'
 import PostDetailPage from './pages/PostDetailPage'
 import AdminArticleManagementPage from './pages/AdminArticleManagementPage'
+import AdminMemberManagementPage from './pages/AdminMemberManagementPage'
 import ProfilePage from './pages/ProfilePage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 
@@ -27,6 +28,14 @@ function App() {
             }
           />
           <Route
+            path="/admin/member-management"
+            element={
+              <AdminRoute>
+                <AdminMemberManagementPage />
+              </AdminRoute>
+            }
+          />
+          <Route
             path="/profile"
             element={
               <ProtectedRoute>
@@ -37,9 +46,9 @@ function App() {
           <Route
             path="/admin/profile"
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <ProfilePage />
-              </ProtectedRoute>
+              </AdminRoute>
             }
           />
           <Route
@@ -53,9 +62,9 @@ function App() {
           <Route
             path="/admin/reset-password"
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <ResetPasswordPage />
-              </ProtectedRoute>
+              </AdminRoute>
             }
           />
           <Route

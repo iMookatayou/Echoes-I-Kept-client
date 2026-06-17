@@ -4,6 +4,7 @@ const TOKEN_KEY = 'token'
 const USER_KEY = 'mockUser'
 const REGISTERED_USERS_KEY = 'registeredUsers'
 const USER_OVERRIDES_KEY = 'mockUserOverrides'
+const DELETED_MOCK_USERS_KEY = 'deletedMockUsers'
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -30,6 +31,10 @@ function getUserOverrides() {
   return parseStoredJson(USER_OVERRIDES_KEY, {})
 }
 
+function getDeletedMockUserIds() {
+  return parseStoredJson(DELETED_MOCK_USERS_KEY, [])
+}
+
 function saveRegisteredUsers(users) {
   localStorage.setItem(REGISTERED_USERS_KEY, JSON.stringify(users))
 }
@@ -38,13 +43,37 @@ function saveUserOverrides(overrides) {
   localStorage.setItem(USER_OVERRIDES_KEY, JSON.stringify(overrides))
 }
 
+function saveDeletedMockUserIds(userIds) {
+  localStorage.setItem(DELETED_MOCK_USERS_KEY, JSON.stringify(userIds))
+}
+
+function createError(message, status) {
+  const error = new Error(message)
+  error.response = { status, data: { error: message } }
+  return error
+}
+
+function normalizeEmail(email) {
+  return email.trim().toLowerCase()
+}
+
+function normalizeUsername(username) {
+  return username.trim()
+}
+
 function applyUserOverride(user) {
   const override = getUserOverrides()[user.id]
   return override ? { ...user, ...override } : user
 }
 
 function getAllUsers() {
-  return [...mockUsers.map(applyUserOverride), ...getRegisteredUsers()]
+  const deletedIds = getDeletedMockUserIds()
+  return [
+    ...mockUsers
+      .filter((user) => !deletedIds.includes(user.id))
+      .map(applyUserOverride),
+    ...getRegisteredUsers(),
+  ]
 }
 
 function persistSession(user) {
@@ -81,19 +110,98 @@ function persistUserUpdate(updatedUser) {
     saveUserOverrides(overrides)
   }
 
-  return persistSession(updatedUser).user
+  const currentUser = getCurrentPublicUser()
+
+  if (currentUser?.id === updatedUser.id) {
+    return persistSession(updatedUser).user
+  }
+
+  return toPublicUser(updatedUser)
 }
 
 function getCurrentFullUser() {
   const currentUser = getCurrentPublicUser()
 
   if (!currentUser) {
-    const error = new Error('Unauthorized')
-    error.response = { status: 401, data: { error: 'Unauthorized' } }
-    throw error
+    throw createError('Unauthorized', 401)
   }
 
-  return getAllUsers().find((user) => user.id === currentUser.id)
+  const fullUser = getAllUsers().find((user) => user.id === currentUser.id)
+
+  if (!fullUser) {
+    throw createError('Unauthorized', 401)
+  }
+
+  return fullUser
+}
+
+function validateUniqueUserFields({ email, username, excludedUserId }) {
+  const users = getAllUsers()
+  const normalizedEmail = normalizeEmail(email)
+  const normalizedUsername = normalizeUsername(username)
+
+  if (
+    users.some(
+      (user) =>
+        user.id !== excludedUserId &&
+        normalizeEmail(user.email) === normalizedEmail,
+    )
+  ) {
+    throw createError('Email is already registered')
+  }
+
+  if (
+    users.some(
+      (user) =>
+        user.id !== excludedUserId &&
+        normalizeUsername(user.username).toLowerCase() ===
+          normalizedUsername.toLowerCase(),
+    )
+  ) {
+    throw createError('Username is already taken')
+  }
+}
+
+function requireAdmin() {
+  const currentUser = getCurrentFullUser()
+
+  if (currentUser.role !== 'admin') {
+    throw createError('Forbidden', 403)
+  }
+
+  return currentUser
+}
+
+function getNextUserId() {
+  const maxId = getAllUsers().reduce(
+    (max, user) => Math.max(max, Number(user.id)),
+    0,
+  )
+  return maxId + 1
+}
+
+function countAdmins(users = getAllUsers()) {
+  return users.filter((user) => user.role === 'admin').length
+}
+
+function deleteStoredUser(userId) {
+  const registeredUsers = getRegisteredUsers()
+  const registeredIndex = registeredUsers.findIndex((user) => user.id === userId)
+
+  if (registeredIndex >= 0) {
+    registeredUsers.splice(registeredIndex, 1)
+    saveRegisteredUsers(registeredUsers)
+    return
+  }
+
+  const deletedIds = getDeletedMockUserIds()
+  if (!deletedIds.includes(userId)) {
+    saveDeletedMockUserIds([...deletedIds, userId])
+  }
+
+  const overrides = getUserOverrides()
+  delete overrides[userId]
+  saveUserOverrides(overrides)
 }
 
 export async function login({ email, password }) {
@@ -115,25 +223,17 @@ export async function login({ email, password }) {
 export async function signup({ name, username, email, password }) {
   await delay(500)
 
-  const users = getAllUsers()
-
-  if (users.some((u) => u.email === email)) {
-    const error = new Error('Email is already registered')
-    error.response = { data: { error: 'Email is already registered' } }
-    throw error
+  if (password.length < 6) {
+    throw createError('Password must be at least 6 characters')
   }
 
-  if (users.some((u) => u.username === username)) {
-    const error = new Error('Username is already taken')
-    error.response = { data: { error: 'Username is already taken' } }
-    throw error
-  }
+  validateUniqueUserFields({ email, username })
 
   const newUser = {
-    id: Date.now(),
-    name,
-    username,
-    email,
+    id: getNextUserId(),
+    name: name.trim(),
+    username: normalizeUsername(username),
+    email: normalizeEmail(email),
     password,
     role: 'user',
     profilePic: avatarUrl(name, '2B6CB0'),
@@ -150,28 +250,14 @@ export async function updateProfile({ name, username, email, profilePic }) {
   await delay(400)
 
   const currentUser = getCurrentFullUser()
-  const users = getAllUsers()
-
-  if (users.some((user) => user.id !== currentUser.id && user.email === email)) {
-    const error = new Error('Email is already registered')
-    error.response = { data: { error: 'Email is already registered' } }
-    throw error
-  }
-
-  if (
-    users.some((user) => user.id !== currentUser.id && user.username === username)
-  ) {
-    const error = new Error('Username is already taken')
-    error.response = { data: { error: 'Username is already taken' } }
-    throw error
-  }
+  validateUniqueUserFields({ email, username, excludedUserId: currentUser.id })
 
   return persistUserUpdate({
     ...currentUser,
-    name,
-    username,
-    email,
-    profilePic: profilePic || avatarUrl(name, '2B6CB0'),
+    name: name.trim(),
+    username: normalizeUsername(username),
+    email: normalizeEmail(email),
+    profilePic: profilePic || avatarUrl(name.trim(), '2B6CB0'),
   })
 }
 
@@ -180,10 +266,12 @@ export async function resetPassword({ currentPassword, newPassword }) {
 
   const currentUser = getCurrentFullUser()
 
+  if (newPassword.length < 6) {
+    throw createError('Password must be at least 6 characters')
+  }
+
   if (currentUser.password !== currentPassword) {
-    const error = new Error('Current password is incorrect')
-    error.response = { data: { error: 'Current password is incorrect' } }
-    throw error
+    throw createError('Current password is incorrect')
   }
 
   return persistUserUpdate({
@@ -219,4 +307,99 @@ export function getStoredToken() {
 export function getStoredUser() {
   if (!getStoredToken()) return null
   return getCurrentPublicUser()
+}
+
+export function getAdminMembers() {
+  requireAdmin()
+  return getAllUsers().map(toPublicUser)
+}
+
+export function createAdminMember({ name, username, email, password, role, profilePic }) {
+  requireAdmin()
+
+  if (password.length < 6) {
+    throw createError('Password must be at least 6 characters')
+  }
+
+  validateUniqueUserFields({ email, username })
+
+  const newUser = {
+    id: getNextUserId(),
+    name: name.trim(),
+    username: normalizeUsername(username),
+    email: normalizeEmail(email),
+    password,
+    role,
+    profilePic: profilePic.trim() || avatarUrl(name.trim(), '2B6CB0'),
+  }
+
+  const registered = getRegisteredUsers()
+  registered.push(newUser)
+  saveRegisteredUsers(registered)
+
+  return toPublicUser(newUser)
+}
+
+export function updateAdminMember(
+  userId,
+  { name, username, email, password, role, profilePic },
+) {
+  requireAdmin()
+
+  const numericUserId = Number(userId)
+  const currentUsers = getAllUsers()
+  const targetUser = currentUsers.find((user) => user.id === numericUserId)
+
+  if (!targetUser) {
+    throw createError('Member not found', 404)
+  }
+
+  if (password && password.length < 6) {
+    throw createError('Password must be at least 6 characters')
+  }
+
+  if (
+    targetUser.role === 'admin' &&
+    role !== 'admin' &&
+    countAdmins(currentUsers) <= 1
+  ) {
+    throw createError('At least one admin account is required')
+  }
+
+  validateUniqueUserFields({
+    email,
+    username,
+    excludedUserId: numericUserId,
+  })
+
+  return persistUserUpdate({
+    ...targetUser,
+    name: name.trim(),
+    username: normalizeUsername(username),
+    email: normalizeEmail(email),
+    password: password || targetUser.password,
+    role,
+    profilePic: profilePic.trim() || avatarUrl(name.trim(), '2B6CB0'),
+  })
+}
+
+export function deleteAdminMember(userId) {
+  const currentUser = requireAdmin()
+  const numericUserId = Number(userId)
+  const currentUsers = getAllUsers()
+  const targetUser = currentUsers.find((user) => user.id === numericUserId)
+
+  if (!targetUser) {
+    throw createError('Member not found', 404)
+  }
+
+  if (currentUser.id === numericUserId) {
+    throw createError('You cannot delete your own account')
+  }
+
+  if (targetUser.role === 'admin' && countAdmins(currentUsers) <= 1) {
+    throw createError('At least one admin account is required')
+  }
+
+  deleteStoredUser(numericUserId)
 }
