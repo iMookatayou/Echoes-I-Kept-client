@@ -3,7 +3,7 @@ import { getMockUserById } from '../data/mockUsers'
 
 const STORAGE_KEY = 'adminNotifications'
 const STORAGE_VERSION_KEY = 'adminNotificationsVersion'
-const STORAGE_VERSION = '2'
+const STORAGE_VERSION = '3'
 
 function getPost(postId) {
   return mockPosts.find((post) => post.id === postId) || null
@@ -23,7 +23,8 @@ function getCommentNotification(postId) {
     type: 'comment',
     status: 'unread',
     actorName: user?.name || comment?.name || 'Reader',
-    actorAvatar: user?.profilePic || comment?.profile_pic || '',
+    actorAvatar:
+      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&crop=face',
     action: 'Commented on your article:',
     title: `${user?.name || comment?.name || 'Reader'} Commented on your article: ${post?.title || 'Article'}`,
     message: comment?.comment_text || '',
@@ -42,7 +43,8 @@ function getLikeNotification(postId) {
     type: 'like',
     status: 'unread',
     actorName: user?.name || 'Reader',
-    actorAvatar: user?.profilePic || '',
+    actorAvatar:
+      'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&crop=face',
     action: 'liked your article:',
     title: `${user?.name || 'Reader'} liked your article: ${post?.title || 'Article'}`,
     message: '',

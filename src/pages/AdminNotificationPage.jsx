@@ -42,13 +42,13 @@ function AdminNotificationPage() {
 
   return (
     <AdminLayout title="Notification">
-      <div className="max-w-[1100px]">
+      <div className="max-w-[900px]">
         {unreadNotifications.length > 0 ? (
           <div className="divide-y divide-border">
             {unreadNotifications.map((notification) => (
               <article
                 key={notification.id}
-                className="grid gap-4 py-8 md:grid-cols-[minmax(0,1fr)_56px]"
+                className="grid gap-4 py-8 first:pt-0 md:grid-cols-[minmax(0,1fr)_56px]"
               >
                 <div className="flex min-w-0 gap-4">
                   <img
