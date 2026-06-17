@@ -23,7 +23,7 @@ const navItems = [
   { icon: Folder, label: 'Category management', path: '/admin/category-management' },
   { icon: Users, label: 'Member management', path: '/admin/member-management' },
   { icon: User, label: 'Profile', path: '/admin/profile' },
-  { icon: Bell, label: 'Notification' },
+  { icon: Bell, label: 'Notification', path: '/admin/notification' },
   { icon: KeyRound, label: 'Reset password', path: '/admin/reset-password' },
 ]
 
