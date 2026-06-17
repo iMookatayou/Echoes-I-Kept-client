@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage'
 import SignUpPage from './pages/SignUpPage'
 import PostDetailPage from './pages/PostDetailPage'
 import AdminArticleManagementPage from './pages/AdminArticleManagementPage'
+import AdminMemberManagementPage from './pages/AdminMemberManagementPage'
 import ProfilePage from './pages/ProfilePage'
 import ResetPasswordPage from './pages/ResetPasswordPage'
 
@@ -23,6 +24,14 @@ function App() {
             element={
               <AdminRoute>
                 <AdminArticleManagementPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/member-management"
+            element={
+              <AdminRoute>
+                <AdminMemberManagementPage />
               </AdminRoute>
             }
           />

@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   LogOut,
   Menu,
+  Users,
   User,
   KeyRound,
   X,
@@ -91,17 +92,30 @@ function Navbar() {
                 Reset password
               </button>
               {state.user.role === 'admin' && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDropdownOpen(false)
-                    navigate('/admin/article-management')
-                  }}
-                  className="w-full flex items-center px-3 py-2 text-sm text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground hover:rounded-sm cursor-pointer"
-                >
-                  <LayoutDashboard className="mr-2 h-4 w-4" />
-                  Admin panel
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDropdownOpen(false)
+                      navigate('/admin/article-management')
+                    }}
+                    className="w-full flex items-center px-3 py-2 text-sm text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground hover:rounded-sm cursor-pointer"
+                  >
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    Article management
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDropdownOpen(false)
+                      navigate('/admin/member-management')
+                    }}
+                    className="w-full flex items-center px-3 py-2 text-sm text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground hover:rounded-sm cursor-pointer"
+                  >
+                    <Users className="mr-2 h-4 w-4" />
+                    Member management
+                  </button>
+                </>
               )}
               <div className="border-t border-muted m-1" />
               <button
@@ -183,17 +197,30 @@ function Navbar() {
                 Reset password
               </button>
               {state.user.role === 'admin' && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setMobileMenuOpen(false)
-                    navigate('/admin/article-management')
-                  }}
-                  className="flex items-center w-full px-4 py-2 text-base font-medium text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground rounded-sm"
-                >
-                  <LayoutDashboard className="mr-4 h-5 w-5" />
-                  Admin panel
-                </button>
+                <>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      navigate('/admin/article-management')
+                    }}
+                    className="flex items-center w-full px-4 py-2 text-base font-medium text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground rounded-sm"
+                  >
+                    <LayoutDashboard className="mr-4 h-5 w-5" />
+                    Article management
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileMenuOpen(false)
+                      navigate('/admin/member-management')
+                    }}
+                    className="flex items-center w-full px-4 py-2 text-base font-medium text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground rounded-sm"
+                  >
+                    <Users className="mr-4 h-5 w-5" />
+                    Member management
+                  </button>
+                </>
               )}
               <div className="border-t border-muted" />
               <button
