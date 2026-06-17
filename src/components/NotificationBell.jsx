@@ -9,11 +9,20 @@ import {
 } from '../services/notificationService'
 
 function formatNotificationDate(value) {
-  return new Date(value).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  })
+  const diffMs = Date.now() - new Date(value).getTime()
+  const diffMinutes = Math.max(1, Math.floor(diffMs / 60000))
+
+  if (diffMinutes < 60) {
+    return `${diffMinutes} minute${diffMinutes === 1 ? '' : 's'} ago`
+  }
+
+  const diffHours = Math.floor(diffMinutes / 60)
+  if (diffHours < 24) {
+    return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`
+  }
+
+  const diffDays = Math.floor(diffHours / 24)
+  return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`
 }
 
 function NotificationBell({ compact = false, onNavigate }) {
@@ -143,11 +152,16 @@ function NotificationBell({ compact = false, onNavigate }) {
                   />
                   <span className="min-w-0 flex-1">
                     <span className="block text-xs font-semibold leading-snug">
-                      {notification.title}
+                      {notification.actorName}{' '}
+                      <span className="font-normal">
+                        {notification.action} {notification.articleTitle}
+                      </span>
                     </span>
-                    <span className="mt-1 block truncate text-xs text-muted-foreground">
-                      {notification.articleTitle}
-                    </span>
+                    {notification.message && (
+                      <span className="mt-1 block truncate text-xs text-muted-foreground">
+                        “{notification.message}”
+                      </span>
+                    )}
                     <span className="mt-1 block text-[10px] text-[#FF9950]">
                       {formatNotificationDate(notification.createdAt)}
                     </span>

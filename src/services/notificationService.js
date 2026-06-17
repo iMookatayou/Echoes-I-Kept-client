@@ -2,9 +2,15 @@ import { mockPosts, mockCommentsByPostId } from '../data/mockPosts'
 import { getMockUserById } from '../data/mockUsers'
 
 const STORAGE_KEY = 'adminNotifications'
+const STORAGE_VERSION_KEY = 'adminNotificationsVersion'
+const STORAGE_VERSION = '2'
 
 function getPost(postId) {
   return mockPosts.find((post) => post.id === postId) || null
+}
+
+function hoursAgo(hours) {
+  return new Date(Date.now() - hours * 60 * 60 * 1000).toISOString()
 }
 
 function getCommentNotification(postId) {
@@ -18,39 +24,36 @@ function getCommentNotification(postId) {
     status: 'unread',
     actorName: user?.name || comment?.name || 'Reader',
     actorAvatar: user?.profilePic || comment?.profile_pic || '',
-    title: `${user?.name || comment?.name || 'Reader'} Commented on the article.`,
+    action: 'Commented on your article:',
+    title: `${user?.name || comment?.name || 'Reader'} Commented on your article: ${post?.title || 'Article'}`,
     message: comment?.comment_text || '',
     articleId: postId,
     articleTitle: post?.title || 'Article',
-    createdAt: comment?.created_at || '2024-09-12T18:30:00Z',
+    createdAt: hoursAgo(4),
   }
 }
 
-function getPublishedNotification(postId) {
+function getLikeNotification(postId) {
   const post = getPost(postId)
-  const author = getMockUserById(post?.authorId)
+  const user = getMockUserById(3)
 
   return {
-    id: `published-${postId}`,
-    type: 'article',
+    id: `like-${postId}-${user?.id || 'reader'}`,
+    type: 'like',
     status: 'unread',
-    actorName: author?.name || post?.author || 'Author',
-    actorAvatar: author?.profilePic || post?.authorAvatar || '',
-    title: `${author?.name || post?.author || 'Author'} Published new article.`,
-    message: post?.title || '',
+    actorName: user?.name || 'Reader',
+    actorAvatar: user?.profilePic || '',
+    action: 'liked your article:',
+    title: `${user?.name || 'Reader'} liked your article: ${post?.title || 'Article'}`,
+    message: '',
     articleId: postId,
     articleTitle: post?.title || 'Article',
-    createdAt: `${post?.date || '2024-09-10'}T09:00:00Z`,
+    createdAt: hoursAgo(4),
   }
 }
 
 function getInitialNotifications() {
-  return [
-    getPublishedNotification(2),
-    getCommentNotification(2),
-    getCommentNotification(1),
-    getPublishedNotification(1),
-  ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+  return [getCommentNotification(2), getLikeNotification(2)]
 }
 
 function parseStoredNotifications() {
@@ -63,12 +66,22 @@ function parseStoredNotifications() {
 }
 
 export function getAdminNotifications() {
+  const version = localStorage.getItem(STORAGE_VERSION_KEY)
+
+  if (version !== STORAGE_VERSION) {
+    const initialNotifications = getInitialNotifications()
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(initialNotifications))
+    localStorage.setItem(STORAGE_VERSION_KEY, STORAGE_VERSION)
+    return initialNotifications
+  }
+
   const stored = parseStoredNotifications()
 
   if (stored) return stored
 
   const initialNotifications = getInitialNotifications()
   localStorage.setItem(STORAGE_KEY, JSON.stringify(initialNotifications))
+  localStorage.setItem(STORAGE_VERSION_KEY, STORAGE_VERSION)
   return initialNotifications
 }
 
