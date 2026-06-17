@@ -5,6 +5,10 @@ import { Loader2, Search } from 'lucide-react'
 import ArticleCard from './ArticleCard'
 import { mockCategories } from '../data/mockPosts'
 import {
+  getAdminCategories,
+  hasAdminCategoryStore,
+} from '../services/categoryAdminService'
+import {
   getPublishedAdminArticlesByCategory,
   hasAdminArticleStore,
   searchPublishedAdminArticles,
@@ -22,11 +26,19 @@ function LatestArticles() {
   const [keyword, setKeyword] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [searchOpen, setSearchOpen] = useState(false)
-  const [categories, setCategories] = useState([])
-  const [categoriesLoading, setCategoriesLoading] = useState(true)
+  const [categories, setCategories] = useState(() =>
+    hasAdminCategoryStore() ? getAdminCategories() : [],
+  )
+  const [categoriesLoading, setCategoriesLoading] = useState(
+    () => !hasAdminCategoryStore(),
+  )
   const [useMockData, setUseMockData] = useState(false)
 
   useEffect(() => {
+    if (hasAdminCategoryStore()) {
+      return
+    }
+
     axios
       .get(`${API_BASE}/categories`)
       .then((res) => {
@@ -35,7 +47,7 @@ function LatestArticles() {
       })
       .catch((err) => {
         console.error('Error fetching categories:', err)
-        setCategories(mockCategories)
+        setCategories(getAdminCategories())
         setCategoriesLoading(false)
       })
   }, [])
