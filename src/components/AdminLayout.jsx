@@ -20,7 +20,7 @@ const navItems = [
     label: 'Article management',
     path: '/admin/article-management',
   },
-  { icon: Folder, label: 'Category management' },
+  { icon: Folder, label: 'Category management', path: '/admin/category-management' },
   { icon: Users, label: 'Member management', path: '/admin/member-management' },
   { icon: User, label: 'Profile', path: '/admin/profile' },
   { icon: Bell, label: 'Notification', path: '/admin/notification' },
