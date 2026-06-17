@@ -17,6 +17,20 @@ const emptyForm = {
   content: '',
 }
 
+function getStatusMeta(status) {
+  return status === 'draft'
+    ? {
+        label: 'Draft',
+        className: 'text-muted-foreground',
+        dotClassName: 'bg-muted-foreground',
+      }
+    : {
+        label: 'Published',
+        className: 'text-[#12B76A]',
+        dotClassName: 'bg-[#12B76A]',
+      }
+}
+
 function getArticleForm(article) {
   if (!article) return emptyForm
 
@@ -385,15 +399,7 @@ function AdminArticleManagementPage() {
                 </td>
                 <td className="px-5 py-4">{article.category}</td>
                 <td className="px-5 py-4">
-                  <span
-                    className={`font-medium ${
-                      article.status === 'published'
-                        ? 'text-green-600'
-                        : 'text-muted-foreground'
-                    }`}
-                  >
-                    • {article.status === 'published' ? 'Published' : 'Draft'}
-                  </span>
+                  <StatusLabel status={article.status} />
                 </td>
                 <td className="px-5 py-4">
                   <div className="flex justify-end gap-3">
@@ -442,6 +448,22 @@ function AdminArticleManagementPage() {
         />
       )}
     </AdminLayout>
+  )
+}
+
+function StatusLabel({ status }) {
+  const statusMeta = getStatusMeta(status)
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 text-[12px] font-medium leading-none ${statusMeta.className}`}
+    >
+      <span
+        className={`h-1 w-1 rounded-full ${statusMeta.dotClassName}`}
+        aria-hidden="true"
+      />
+      {statusMeta.label}
+    </span>
   )
 }
 
