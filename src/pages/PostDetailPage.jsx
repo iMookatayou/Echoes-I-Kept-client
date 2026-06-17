@@ -13,6 +13,10 @@ import {
   getMockCommentsByPostId,
 } from '../data/mockPosts'
 import { getMockUserById } from '../data/mockUsers'
+import {
+  getPublishedAdminArticleById,
+  hasAdminArticleStore,
+} from '../services/articleAdminService'
 
 const API_BASE = 'https://blog-post-project-api-with-db.vercel.app'
 
@@ -49,7 +53,13 @@ function renderContent(content) {
 
 function PostDetailPage() {
   const { postId } = useParams()
-  const mockPost = useMemo(() => getMockPostById(postId), [postId])
+  const mockPost = useMemo(() => {
+    if (hasAdminArticleStore()) {
+      return getPublishedAdminArticleById(postId)
+    }
+
+    return getMockPostById(postId)
+  }, [postId])
 
   const [loading, setLoading] = useState(true)
   const [post, setPost] = useState(() => mockPost)
@@ -66,6 +76,15 @@ function PostDetailPage() {
 
     async function load() {
       setLoading(true)
+
+      if (hasAdminArticleStore()) {
+        setPost(mockPost)
+        setContent(mockPost?.content || '')
+        setLikesAmount(getMockLikesAmount(postId))
+        setComments(getMockCommentsByPostId(postId))
+        setLoading(false)
+        return
+      }
 
       try {
         const res = await axios.get(`${API_BASE}/posts/${postId}`)

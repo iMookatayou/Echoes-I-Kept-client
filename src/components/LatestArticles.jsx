@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { Loader2, Search } from 'lucide-react'
 import ArticleCard from './ArticleCard'
+import { mockCategories } from '../data/mockPosts'
 import {
-  getMockPostsByCategory,
-  mockCategories,
-  searchMockPosts,
-} from '../data/mockPosts'
+  getPublishedAdminArticlesByCategory,
+  hasAdminArticleStore,
+  searchPublishedAdminArticles,
+} from '../services/articleAdminService'
 
 const API_BASE = 'https://blog-post-project-api-with-db.vercel.app'
 
@@ -48,9 +49,9 @@ function LatestArticles() {
     let cancelled = false
 
     const fetchPosts = () => {
-      if (useMockData) {
+      if (useMockData || hasAdminArticleStore()) {
         return Promise.resolve(
-          getMockPostsByCategory(selectedCategory, page, 6),
+          getPublishedAdminArticlesByCategory(selectedCategory, page, 6),
         )
       }
       return axios
@@ -58,7 +59,7 @@ function LatestArticles() {
         .then((res) => res.data)
         .catch(() => {
           setUseMockData(true)
-          return getMockPostsByCategory(selectedCategory, page, 6)
+          return getPublishedAdminArticlesByCategory(selectedCategory, page, 6)
         })
     }
 
@@ -80,13 +81,13 @@ function LatestArticles() {
     if (keyword.length === 0) return
 
     const fetchSearchResults = () => {
-      if (useMockData) {
-        return Promise.resolve(searchMockPosts(keyword))
+      if (useMockData || hasAdminArticleStore()) {
+        return Promise.resolve(searchPublishedAdminArticles(keyword))
       }
       return axios
         .get(`${API_BASE}/posts?keyword=${keyword}`)
         .then((res) => res.data.posts)
-        .catch(() => searchMockPosts(keyword))
+        .catch(() => searchPublishedAdminArticles(keyword))
     }
 
     fetchSearchResults().then((results) => {
