@@ -46,9 +46,9 @@ function App() {
           <Route
             path="/admin/profile"
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <ProfilePage />
-              </ProtectedRoute>
+              </AdminRoute>
             }
           />
           <Route
@@ -62,9 +62,9 @@ function App() {
           <Route
             path="/admin/reset-password"
             element={
-              <ProtectedRoute>
+              <AdminRoute>
                 <ResetPasswordPage />
-              </ProtectedRoute>
+              </AdminRoute>
             }
           />
           <Route
