@@ -10,6 +10,7 @@ import {
   X,
 } from 'lucide-react'
 import { useAuth } from '../context/useAuth'
+import NotificationBell from './NotificationBell'
 
 function Navbar() {
   const navigate = useNavigate()
@@ -52,6 +53,7 @@ function Navbar() {
         </div>
       ) : isAuthenticated ? (
         <div className="hidden sm:flex items-center space-x-4" ref={dropdownRef}>
+          <NotificationBell />
           <button
             type="button"
             onClick={() => setDropdownOpen((open) => !open)}
@@ -160,6 +162,10 @@ function Navbar() {
                   {state.user.name}
                 </span>
               </div>
+              <NotificationBell
+                compact
+                onNavigate={() => setMobileMenuOpen(false)}
+              />
               <button
                 type="button"
                 onClick={() => {
