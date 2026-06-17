@@ -1,13 +1,13 @@
 import { useMemo, useState } from 'react'
 import { Edit3, Image, Search, Trash2, X } from 'lucide-react'
 import AdminLayout from '../components/AdminLayout'
-import { mockCategories } from '../data/mockPosts'
 import {
   createAdminArticle,
   getAdminArticles,
   saveAdminArticles,
   updateAdminArticle,
 } from '../services/articleAdminService'
+import { getAdminCategories } from '../services/categoryAdminService'
 
 const emptyForm = {
   title: '',
@@ -44,6 +44,7 @@ function getArticleForm(article) {
 }
 
 function AdminArticleManagementPage() {
+  const [categories] = useState(() => getAdminCategories())
   const [articles, setArticles] = useState(() => getAdminArticles())
   const [view, setView] = useState('list')
   const [form, setForm] = useState(emptyForm)
@@ -101,7 +102,7 @@ function AdminArticleManagementPage() {
 
   const openCreate = () => {
     setEditingId(null)
-    setForm(emptyForm)
+    setForm({ ...emptyForm, category: categories[0]?.name || '' })
     setErrors({})
     setView('form')
   }
@@ -239,7 +240,7 @@ function AdminArticleManagementPage() {
                 onChange={(event) => updateForm('category', event.target.value)}
                 className="h-10 w-[360px] max-w-full rounded-sm border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:border-muted-foreground"
               >
-                {mockCategories.map((category) => (
+                {categories.map((category) => (
                   <option key={category.id} value={category.name}>
                     {category.name}
                   </option>
@@ -370,7 +371,7 @@ function AdminArticleManagementPage() {
           className="h-10 rounded-sm border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:border-muted-foreground"
         >
           <option value="all">Category</option>
-          {mockCategories.map((category) => (
+          {categories.map((category) => (
             <option key={category.id} value={category.name}>
               {category.name}
             </option>
