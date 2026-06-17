@@ -33,7 +33,13 @@ function NotificationBell({ compact = false, onNavigate }) {
     [notifications],
   )
 
-  const previewNotifications = notifications.slice(0, 4)
+  const unreadNotifications = useMemo(
+    () =>
+      notifications.filter((notification) => notification.status === 'unread'),
+    [notifications],
+  )
+
+  const previewNotifications = unreadNotifications.slice(0, 4)
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -105,7 +111,8 @@ function NotificationBell({ compact = false, onNavigate }) {
               <button
                 type="button"
                 onClick={markAllAsRead}
-                className="text-xs font-medium text-muted-foreground hover:text-foreground"
+                disabled={unreadCount === 0}
+                className="text-xs font-medium text-muted-foreground hover:text-foreground disabled:cursor-not-allowed disabled:text-muted-foreground/50"
               >
                 Mark all read
               </button>
@@ -121,34 +128,38 @@ function NotificationBell({ compact = false, onNavigate }) {
           </div>
 
           <div className="max-h-[360px] space-y-1 overflow-y-auto">
-            {previewNotifications.map((notification) => (
-              <button
-                type="button"
-                key={notification.id}
-                onClick={() => openArticle(notification)}
-                className="flex w-full gap-3 rounded-sm px-2 py-2 text-left hover:bg-[#EFEEEB]"
-              >
-                <img
-                  src={notification.actorAvatar}
-                  alt={notification.actorName}
-                  className="h-9 w-9 rounded-full object-cover"
-                />
-                <span className="min-w-0 flex-1">
-                  <span className="block text-xs font-semibold leading-snug">
-                    {notification.title}
+            {previewNotifications.length > 0 ? (
+              previewNotifications.map((notification) => (
+                <button
+                  type="button"
+                  key={notification.id}
+                  onClick={() => openArticle(notification)}
+                  className="flex w-full gap-3 rounded-sm px-2 py-2 text-left hover:bg-[#EFEEEB]"
+                >
+                  <img
+                    src={notification.actorAvatar}
+                    alt={notification.actorName}
+                    className="h-9 w-9 rounded-full object-cover"
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-xs font-semibold leading-snug">
+                      {notification.title}
+                    </span>
+                    <span className="mt-1 block truncate text-xs text-muted-foreground">
+                      {notification.articleTitle}
+                    </span>
+                    <span className="mt-1 block text-[10px] text-[#FF9950]">
+                      {formatNotificationDate(notification.createdAt)}
+                    </span>
                   </span>
-                  <span className="mt-1 block truncate text-xs text-muted-foreground">
-                    {notification.articleTitle}
-                  </span>
-                  <span className="mt-1 block text-[10px] text-[#FF9950]">
-                    {formatNotificationDate(notification.createdAt)}
-                  </span>
-                </span>
-                {notification.status === 'unread' && (
                   <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-red-500" />
-                )}
-              </button>
-            ))}
+                </button>
+              ))
+            ) : (
+              <p className="px-2 py-6 text-center text-xs text-muted-foreground">
+                No unread notifications.
+              </p>
+            )}
           </div>
 
           {isAdmin && (

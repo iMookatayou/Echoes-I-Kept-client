@@ -25,7 +25,7 @@ function AdminNotificationPage() {
     getAdminNotifications(),
   )
   const [search, setSearch] = useState('')
-  const [statusFilter, setStatusFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('unread')
   const [typeFilter, setTypeFilter] = useState('all')
   const [toast, setToast] = useState(null)
   const [deleteTarget, setDeleteTarget] = useState(null)
