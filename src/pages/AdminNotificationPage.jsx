@@ -62,7 +62,7 @@ function AdminNotificationPage() {
                   <img
                     src={notification.actorAvatar}
                     alt={notification.actorName}
-                    className="h-10 w-10 shrink-0 rounded-full object-cover grayscale"
+                    className="h-10 w-10 shrink-0 rounded-full object-cover"
                   />
                   <div className="min-w-0">
                     <p className="text-sm leading-6 text-muted-foreground md:text-base">
