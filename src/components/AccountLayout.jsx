@@ -5,10 +5,11 @@ import Footer from './Footer'
 import AdminLayout from './AdminLayout'
 import { useAuth } from '../context/useAuth'
 
-function AccountLayout({ activePage, children, title }) {
+function AccountLayout({ activePage, children, layout = 'default', title }) {
   const { state } = useAuth()
   const location = useLocation()
   const isAdminPath = location.pathname.startsWith('/admin/')
+  const isProfileLayout = layout === 'profile'
   const profilePath =
     state.user?.role === 'admin' ? '/admin/profile' : '/profile'
   const resetPasswordPath =
@@ -24,20 +25,55 @@ function AccountLayout({ activePage, children, title }) {
     },
   ]
 
+  const containerClassName = isProfileLayout
+    ? 'mx-auto w-full max-w-[800px]'
+    : 'mx-auto w-full max-w-[760px]'
+  const headingClassName = isProfileLayout
+    ? 'mb-6 flex min-w-0 items-center gap-3'
+    : 'mb-6 flex items-center gap-3 md:ml-[150px]'
+  const contentClassName = isProfileLayout
+    ? 'grid gap-6 lg:grid-cols-[minmax(160px,200px)_minmax(0,552px)] lg:items-start lg:justify-center xl:gap-12'
+    : 'grid gap-6 md:grid-cols-[120px_300px] md:items-start md:justify-center'
+  const avatarClassName = isProfileLayout
+    ? 'h-12 w-12 rounded-full object-cover'
+    : 'h-8 w-8 rounded-full object-cover'
+  const headingTextClassName = isProfileLayout ? 'text-base' : 'text-sm'
+
   const accountContent = (
-    <div className="mx-auto w-full max-w-[760px]">
-      <div className="mb-6 flex items-center gap-3 md:ml-[150px]">
-        <img
-          src={state.user?.profilePic || '/author-image.jpeg'}
-          alt={state.user?.name || 'Profile'}
-          className="h-8 w-8 rounded-full object-cover"
+    <div className={containerClassName}>
+      <div className={headingClassName}>
+        {state.user?.profilePic ? (
+          <img
+            src={state.user.profilePic}
+            alt={state.user?.name || 'Profile'}
+            className={avatarClassName}
+          />
+        ) : isProfileLayout ? (
+          <div
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#7B7974] text-white"
+            role="img"
+            aria-label={`${state.user?.name || 'User'} profile placeholder`}
+          >
+            <User className="h-5 w-5" strokeWidth={1.5} />
+          </div>
+        ) : (
+          <img
+            src="/author-image.jpeg"
+            alt={state.user?.name || 'Profile'}
+            className={avatarClassName}
+          />
+        )}
+        <p className={`${headingTextClassName} min-w-0 truncate font-medium`}>
+          {state.user?.name || 'Member'}
+        </p>
+        <span
+          className={isProfileLayout ? 'h-6 w-px bg-border' : 'h-4 w-px bg-border'}
+          aria-hidden="true"
         />
-        <p className="text-sm font-medium">{state.user?.name || 'Member'}</p>
-        <span className="h-4 w-px bg-border" aria-hidden="true" />
-        <p className="text-sm font-bold">{title}</p>
+        <p className={`${headingTextClassName} shrink-0 font-bold`}>{title}</p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-[120px_300px] md:items-start md:justify-center">
+      <div className={contentClassName}>
         <aside>
           <nav className="space-y-2">
             {navItems.map(({ icon: Icon, label, path, value }) => (
