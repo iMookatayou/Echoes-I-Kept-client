@@ -1,9 +1,11 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AdminLayout from '../components/AdminLayout'
+import { useAuth } from '../context/useAuth'
 import {
-  getAdminNotifications,
-  markAdminNotificationAsRead,
+  getNotifications,
+  markNotificationAsRead,
+  subscribeToNotifications,
 } from '../services/notificationService'
 
 function formatRelativeTime(value) {
@@ -25,8 +27,14 @@ function formatRelativeTime(value) {
 
 function AdminNotificationPage() {
   const navigate = useNavigate()
+  const { state } = useAuth()
   const [notifications, setNotifications] = useState(() =>
-    getAdminNotifications(),
+    getNotifications(state.user),
+  )
+
+  useEffect(
+    () => subscribeToNotifications(state.user, setNotifications),
+    [state.user],
   )
 
   const unreadNotifications = useMemo(
@@ -36,21 +44,21 @@ function AdminNotificationPage() {
   )
 
   const viewNotification = (notification) => {
-    setNotifications(markAdminNotificationAsRead(notification.id))
+    setNotifications(markNotificationAsRead(state.user, notification.id))
     navigate(`/post/${notification.articleId}`)
   }
 
   return (
     <AdminLayout title="Notification">
-      <div className="max-w-[900px]">
+      <div className="w-full">
         {unreadNotifications.length > 0 ? (
           <div className="divide-y divide-border">
             {unreadNotifications.map((notification) => (
               <article
                 key={notification.id}
-                className="grid gap-4 py-8 first:pt-0 md:grid-cols-[minmax(0,1fr)_56px]"
+                className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-x-4 py-6 first:pt-0 sm:gap-x-6 sm:py-8"
               >
-                <div className="flex min-w-0 gap-4">
+                <div className="flex min-w-0 gap-3 sm:gap-4">
                   <img
                     src={notification.actorAvatar}
                     alt={notification.actorName}
@@ -80,7 +88,7 @@ function AdminNotificationPage() {
                 <button
                   type="button"
                   onClick={() => viewNotification(notification)}
-                  className="w-fit text-sm font-semibold underline underline-offset-2 md:justify-self-end md:pt-1"
+                  className="justify-self-end pt-1 text-sm font-semibold underline underline-offset-2"
                 >
                   View
                 </button>
