@@ -52,31 +52,40 @@ function Navbar() {
           <div className="ml-3 h-6 w-32 bg-[#EFEEEB] animate-pulse rounded" />
         </div>
       ) : isAuthenticated ? (
-        <div className="hidden sm:flex items-center space-x-4" ref={dropdownRef}>
+        <div className="hidden items-center gap-4 sm:flex">
           <NotificationBell />
-          <button
-            type="button"
-            onClick={() => setDropdownOpen((open) => !open)}
-            className="flex items-center space-x-2 rounded-md text-sm font-medium text-foreground hover:text-muted-foreground focus:outline-none"
-          >
-            <img
-              src={state.user.profilePic}
-              alt="Profile"
-              className="h-12 w-12 rounded-full object-cover"
-            />
-            <span>{state.user.name}</span>
-            <ChevronDown className="h-4 w-4" />
-          </button>
+          <div className="relative shrink-0" ref={dropdownRef}>
+            <button
+              type="button"
+              onClick={() => setDropdownOpen((open) => !open)}
+              className="inline-flex h-12 max-w-64 items-center justify-end gap-2 whitespace-nowrap rounded-md text-sm font-medium text-foreground hover:text-muted-foreground focus:outline-none"
+              aria-expanded={dropdownOpen}
+              aria-haspopup="menu"
+            >
+              <img
+                src={state.user.profilePic}
+                alt="Profile"
+                className="h-12 w-12 shrink-0 rounded-full object-cover"
+              />
+              <span className="min-w-0 max-w-40 truncate">
+                {state.user.name}
+              </span>
+              <ChevronDown className="h-4 w-4 shrink-0" />
+            </button>
 
-          {dropdownOpen && (
-            <div className="absolute right-4 md:right-8 top-16 w-56 bg-background rounded-sm shadow-sm border border-muted p-1 z-50">
+            {dropdownOpen && (
+              <div
+                className="absolute right-0 top-full z-50 mt-2 w-56 rounded-sm border border-muted bg-background p-1 shadow-sm"
+                role="menu"
+              >
               <button
                 type="button"
                 onClick={() => {
                   setDropdownOpen(false)
                   navigate(profilePath)
                 }}
-                className="w-full flex items-center px-3 py-2 text-sm text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground hover:rounded-sm cursor-pointer"
+                className="flex w-full cursor-pointer items-center px-3 py-2 text-sm text-foreground hover:rounded-sm hover:bg-[#EFEEEB] hover:text-muted-foreground"
+                role="menuitem"
               >
                 <User className="mr-2 h-4 w-4" />
                 Profile
@@ -87,7 +96,8 @@ function Navbar() {
                   setDropdownOpen(false)
                   navigate(resetPasswordPath)
                 }}
-                className="w-full flex items-center px-3 py-2 text-sm text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground hover:rounded-sm cursor-pointer"
+                className="flex w-full cursor-pointer items-center px-3 py-2 text-sm text-foreground hover:rounded-sm hover:bg-[#EFEEEB] hover:text-muted-foreground"
+                role="menuitem"
               >
                 <KeyRound className="mr-2 h-4 w-4" />
                 Reset password
@@ -99,7 +109,8 @@ function Navbar() {
                     setDropdownOpen(false)
                     navigate('/admin/article-management')
                   }}
-                  className="w-full flex items-center px-3 py-2 text-sm text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground hover:rounded-sm cursor-pointer"
+                  className="flex w-full cursor-pointer items-center px-3 py-2 text-sm text-foreground hover:rounded-sm hover:bg-[#EFEEEB] hover:text-muted-foreground"
+                  role="menuitem"
                 >
                   <LayoutDashboard className="mr-2 h-4 w-4" />
                   Admin panel
@@ -109,13 +120,15 @@ function Navbar() {
               <button
                 type="button"
                 onClick={handleLogout}
-                className="w-full flex items-center px-3 py-2 text-sm text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground hover:rounded-sm cursor-pointer"
+                className="flex w-full cursor-pointer items-center px-3 py-2 text-sm text-foreground hover:rounded-sm hover:bg-[#EFEEEB] hover:text-muted-foreground"
+                role="menuitem"
               >
                 <LogOut className="mr-2 h-4 w-4" />
                 Log out
               </button>
-            </div>
-          )}
+              </div>
+            )}
+          </div>
         </div>
       ) : (
         <div className="hidden sm:flex space-x-4">
