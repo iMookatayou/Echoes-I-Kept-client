@@ -38,6 +38,13 @@ function AccountLayout({ activePage, children, layout = 'default', title }) {
     ? 'h-12 w-12 rounded-full object-cover'
     : 'h-8 w-8 rounded-full object-cover'
   const headingTextClassName = isProfileLayout ? 'text-base' : 'text-sm'
+  const accountNavClassName = isProfileLayout ? 'space-y-3' : 'space-y-2'
+  const accountNavLinkClassName = isProfileLayout
+    ? 'flex min-h-8 items-center gap-3 text-sm leading-5 transition-colors'
+    : 'flex items-center gap-2 text-xs transition-colors'
+  const accountNavIconClassName = isProfileLayout
+    ? 'h-4 w-4 shrink-0'
+    : 'h-3 w-3'
 
   const accountContent = (
     <div className={containerClassName}>
@@ -75,18 +82,18 @@ function AccountLayout({ activePage, children, layout = 'default', title }) {
 
       <div className={contentClassName}>
         <aside>
-          <nav className="space-y-2">
+          <nav className={accountNavClassName}>
             {navItems.map(({ icon: Icon, label, path, value }) => (
               <Link
                 key={value}
                 to={path}
-                className={`flex items-center gap-2 text-xs transition-colors ${
+                className={`${accountNavLinkClassName} ${
                   activePage === value
                     ? 'font-semibold text-foreground'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
-                <Icon className="h-3 w-3" />
+                <Icon className={accountNavIconClassName} strokeWidth={1.75} />
                 {label}
               </Link>
             ))}
