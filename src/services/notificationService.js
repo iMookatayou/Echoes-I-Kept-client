@@ -1,111 +1,199 @@
-import { mockPosts, mockCommentsByPostId } from '../data/mockPosts'
+import { mockCommentsByPostId, mockPosts } from '../data/mockPosts'
 import { getMockUserById } from '../data/mockUsers'
 
-const STORAGE_KEY = 'adminNotifications'
+const STORAGE_PREFIX = 'notifications'
+const STORAGE_VERSION = '1'
+const LEGACY_STORAGE_KEY = 'adminNotifications'
+const LEGACY_VERSION_KEY = 'adminNotificationsVersion'
+const UPDATED_EVENT = 'notifications:updated'
 
 function getPost(postId) {
   return mockPosts.find((post) => post.id === postId) || null
 }
 
-function getCommentNotification(postId) {
-  const post = getPost(postId)
-  const comment = mockCommentsByPostId[postId]?.[0]
-  const user = getMockUserById(comment?.userId)
-
-  return {
-    id: `comment-${postId}-${comment?.id}`,
-    type: 'comment',
-    status: 'unread',
-    actorName: user?.name || comment?.name || 'Reader',
-    actorAvatar: user?.profilePic || comment?.profile_pic || '',
-    title: `${user?.name || comment?.name || 'Reader'} Commented on the article.`,
-    message: comment?.comment_text || '',
-    articleId: postId,
-    articleTitle: post?.title || 'Article',
-    createdAt: comment?.created_at || '2024-09-12T18:30:00Z',
-  }
+function hoursAgo(hours) {
+  return new Date(Date.now() - hours * 60 * 60 * 1000).toISOString()
 }
 
-function getPublishedNotification(postId) {
-  const post = getPost(postId)
-  const author = getMockUserById(post?.authorId)
-
-  return {
-    id: `published-${postId}`,
-    type: 'article',
-    status: 'unread',
-    actorName: author?.name || post?.author || 'Author',
-    actorAvatar: author?.profilePic || post?.authorAvatar || '',
-    title: `${author?.name || post?.author || 'Author'} Published new article.`,
-    message: post?.title || '',
-    articleId: postId,
-    articleTitle: post?.title || 'Article',
-    createdAt: `${post?.date || '2024-09-10'}T09:00:00Z`,
-  }
+function getStorageKey(userId) {
+  return `${STORAGE_PREFIX}:${userId}`
 }
 
-function getInitialNotifications() {
-  return [
-    getPublishedNotification(2),
-    getCommentNotification(2),
-    getCommentNotification(1),
-    getPublishedNotification(1),
-  ].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+function getVersionKey(userId) {
+  return `${STORAGE_PREFIX}:version:${userId}`
 }
 
-function parseStoredNotifications() {
+function parseStoredNotifications(key) {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
+    const stored = JSON.parse(localStorage.getItem(key) || 'null')
+    return Array.isArray(stored) ? stored : null
   } catch {
-    localStorage.removeItem(STORAGE_KEY)
+    localStorage.removeItem(key)
     return null
   }
 }
 
-export function getAdminNotifications() {
-  const stored = parseStoredNotifications()
+function getAdminNotifications() {
+  const post = getPost(2)
+  const comment = mockCommentsByPostId[2]?.[0]
+  const commenter = getMockUserById(comment?.userId)
 
-  if (stored) return stored
-
-  const initialNotifications = getInitialNotifications()
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(initialNotifications))
-  return initialNotifications
+  return [
+    {
+      id: `comment-2-${comment?.id}`,
+      type: 'comment',
+      status: 'unread',
+      actorName: commenter?.name || comment?.name || 'Reader',
+      actorAvatar:
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&crop=face',
+      action: 'Commented on your article:',
+      message: comment?.comment_text || '',
+      articleId: post?.id || 2,
+      articleTitle: post?.title || 'Article',
+      createdAt: hoursAgo(4),
+    },
+    {
+      id: `like-2-${commenter?.id || 'reader'}`,
+      type: 'like',
+      status: 'unread',
+      actorName: commenter?.name || 'Reader',
+      actorAvatar:
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&h=120&fit=crop&crop=face',
+      action: 'liked your article:',
+      message: '',
+      articleId: post?.id || 2,
+      articleTitle: post?.title || 'Article',
+      createdAt: hoursAgo(4),
+    },
+  ]
 }
 
-export function saveAdminNotifications(notifications) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(notifications))
+function getMemberNotifications() {
+  const post = getPost(2)
+  const author = getMockUserById(post?.authorId)
+  const commenter = getMockUserById(3)
+
+  return [
+    {
+      id: `published-${post?.id || 2}`,
+      type: 'published',
+      status: 'unread',
+      actorName: author?.name || 'Thompson P.',
+      actorAvatar: author?.profilePic || '/author-image.jpeg',
+      action: 'Published a new article:',
+      message: '',
+      articleId: post?.id || 2,
+      articleTitle: post?.title || 'Article',
+      createdAt: hoursAgo(9),
+    },
+    {
+      id: `thread-comment-${post?.id || 2}-${commenter?.id || 'reader'}`,
+      type: 'thread-comment',
+      status: 'unread',
+      actorName: commenter?.name || 'Reader',
+      actorAvatar: commenter?.profilePic || '/author-image.jpeg',
+      action: 'Commented on the article you have commented on:',
+      message: '',
+      articleId: post?.id || 2,
+      articleTitle: post?.title || 'Article',
+      createdAt: hoursAgo(12),
+    },
+  ]
 }
 
-export function markAdminNotificationAsRead(id) {
-  const notifications = getAdminNotifications().map((notification) =>
-    notification.id === id ? { ...notification, status: 'read' } : notification,
+function getInitialNotifications(user) {
+  return user.role === 'admin'
+    ? getAdminNotifications()
+    : getMemberNotifications()
+}
+
+function saveNotifications(userId, notifications) {
+  localStorage.setItem(getStorageKey(userId), JSON.stringify(notifications))
+  window.dispatchEvent(
+    new CustomEvent(UPDATED_EVENT, { detail: { userId: String(userId) } }),
   )
-
-  saveAdminNotifications(notifications)
   return notifications
 }
 
-export function markAllAdminNotificationsAsRead() {
-  const notifications = getAdminNotifications().map((notification) => ({
+function getLegacyAdminNotifications(user) {
+  if (user.role !== 'admin' || Number(user.id) !== 2) return null
+  return parseStoredNotifications(LEGACY_STORAGE_KEY)
+}
+
+export function getNotifications(user) {
+  if (!user?.id) return []
+
+  const storageKey = getStorageKey(user.id)
+  const versionKey = getVersionKey(user.id)
+  const storedVersion = localStorage.getItem(versionKey)
+
+  if (storedVersion !== STORAGE_VERSION) {
+    const notifications =
+      getLegacyAdminNotifications(user) || getInitialNotifications(user)
+    localStorage.setItem(storageKey, JSON.stringify(notifications))
+    localStorage.setItem(versionKey, STORAGE_VERSION)
+
+    if (user.role === 'admin' && Number(user.id) === 2) {
+      localStorage.removeItem(LEGACY_STORAGE_KEY)
+      localStorage.removeItem(LEGACY_VERSION_KEY)
+    }
+
+    return notifications
+  }
+
+  const stored = parseStoredNotifications(storageKey)
+  if (stored) return stored
+
+  const notifications = getInitialNotifications(user)
+  localStorage.setItem(storageKey, JSON.stringify(notifications))
+  return notifications
+}
+
+export function markNotificationAsRead(user, id) {
+  if (!user?.id) return []
+
+  const notifications = getNotifications(user).map((notification) =>
+    notification.id === id ? { ...notification, status: 'read' } : notification,
+  )
+
+  return saveNotifications(user.id, notifications)
+}
+
+export function markAllNotificationsAsRead(user) {
+  if (!user?.id) return []
+
+  const notifications = getNotifications(user).map((notification) => ({
     ...notification,
     status: 'read',
   }))
 
-  saveAdminNotifications(notifications)
-  return notifications
+  return saveNotifications(user.id, notifications)
 }
 
-export function deleteAdminNotification(id) {
-  const notifications = getAdminNotifications().filter(
-    (notification) => notification.id !== id,
-  )
-
-  saveAdminNotifications(notifications)
-  return notifications
-}
-
-export function getUnreadAdminNotificationCount() {
-  return getAdminNotifications().filter(
+export function getUnreadNotificationCount(user) {
+  return getNotifications(user).filter(
     (notification) => notification.status === 'unread',
   ).length
+}
+
+export function subscribeToNotifications(user, listener) {
+  if (!user?.id) return () => {}
+
+  const userId = String(user.id)
+  const storageKey = getStorageKey(user.id)
+
+  const handleCustomUpdate = (event) => {
+    if (event.detail?.userId === userId) listener(getNotifications(user))
+  }
+  const handleStorageUpdate = (event) => {
+    if (event.key === storageKey) listener(getNotifications(user))
+  }
+
+  window.addEventListener(UPDATED_EVENT, handleCustomUpdate)
+  window.addEventListener('storage', handleStorageUpdate)
+
+  return () => {
+    window.removeEventListener(UPDATED_EVENT, handleCustomUpdate)
+    window.removeEventListener('storage', handleStorageUpdate)
+  }
 }
