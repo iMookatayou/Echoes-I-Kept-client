@@ -78,7 +78,7 @@ function ProfilePage() {
     <AccountLayout activePage="profile" layout="profile" title="Profile">
       <form
         onSubmit={handleSubmit}
-        className="w-full rounded-sm bg-[#EFEEEB] px-5 py-6 md:px-10 md:py-10"
+        className="w-full rounded-sm bg-[#EFEEEB] px-5 py-6 md:min-h-[648px] md:px-10 md:py-10"
       >
         <div className="mb-8 flex flex-col items-start gap-5 border-b border-border pb-8 sm:flex-row sm:items-center sm:gap-6 md:mb-10 md:gap-8 md:pb-10">
           {form.profilePic ? (
@@ -114,8 +114,8 @@ function ProfilePage() {
           </div>
         )}
 
-        <div className="space-y-5">
-          <label className="block space-y-1">
+        <div className="space-y-5 md:space-y-6">
+          <label className="block space-y-1 md:space-y-2">
             <span className="text-xs font-medium text-muted-foreground">
               Name
             </span>
@@ -130,7 +130,7 @@ function ProfilePage() {
             )}
           </label>
 
-          <label className="block space-y-1">
+          <label className="block space-y-1 md:space-y-2">
             <span className="text-xs font-medium text-muted-foreground">
               Username
             </span>
@@ -145,7 +145,7 @@ function ProfilePage() {
             )}
           </label>
 
-          <label className="block space-y-1">
+          <label className="block space-y-1 md:space-y-2">
             <span className="text-xs font-medium text-muted-foreground">
               Email
             </span>
@@ -161,11 +161,11 @@ function ProfilePage() {
           </label>
         </div>
 
-        <div className="mt-8">
+        <div className="mt-8 md:mt-10">
           <button
             type="submit"
             disabled={state.loading}
-            className="inline-flex h-10 min-w-[120px] items-center justify-center rounded-full bg-foreground px-6 text-xs font-medium text-white hover:bg-muted-foreground disabled:opacity-60"
+            className="inline-flex h-10 min-w-[120px] items-center justify-center rounded-full bg-foreground px-6 text-xs font-medium text-white hover:bg-muted-foreground disabled:opacity-60 md:h-12"
           >
             Save
           </button>
