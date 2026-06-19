@@ -204,11 +204,14 @@ function deleteStoredUser(userId) {
   saveUserOverrides(overrides)
 }
 
-export async function login({ email, password }) {
+export async function login({ email, password, role }) {
   await delay(500)
 
   const user = getAllUsers().find(
-    (u) => u.email === email && u.password === password,
+    (u) =>
+      u.email === email &&
+      u.password === password &&
+      (!role || u.role === role),
   )
 
   if (!user) {
