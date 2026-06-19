@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Save, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import AccountLayout from '../components/AccountLayout'
 import { useAuth } from '../context/useAuth'
 
@@ -57,6 +57,7 @@ function ResetPasswordPage() {
 
     if (result?.error) {
       setErrors({ api: result.error })
+      setConfirmOpen(false)
       return
     }
 
@@ -66,10 +67,14 @@ function ResetPasswordPage() {
   }
 
   return (
-    <AccountLayout activePage="reset-password" title="Reset password">
+    <AccountLayout
+      activePage="reset-password"
+      layout="reset-password"
+      title="Reset password"
+    >
       <form
         onSubmit={handleSubmit}
-        className="h-fit w-full rounded-sm bg-[#EFEEEB] px-5 py-6"
+        className="h-fit w-full rounded-sm bg-[#EFEEEB] px-5 py-6 md:min-h-[455px] md:px-10 md:py-10"
       >
         {errors.api && (
           <div className="mb-5 rounded-sm bg-red-500 p-3 text-sm text-white">
@@ -82,8 +87,8 @@ function ResetPasswordPage() {
           </div>
         )}
 
-        <div className="space-y-4">
-          <label className="block space-y-1">
+        <div className="space-y-5 md:space-y-6">
+          <label className="block space-y-1 md:space-y-2">
             <span className="text-xs font-medium text-muted-foreground">
               Current password
             </span>
@@ -92,7 +97,7 @@ function ResetPasswordPage() {
               value={form.currentPassword}
               onChange={(e) => updateField('currentPassword', e.target.value)}
               disabled={state.loading}
-              className="h-10 w-full rounded-sm border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:border-muted-foreground"
+              className="h-12 w-full rounded-sm border border-input bg-background px-3 text-sm focus-visible:border-muted-foreground focus-visible:outline-none"
             />
             {errors.currentPassword && (
               <span className="text-xs text-red-500">
@@ -101,7 +106,7 @@ function ResetPasswordPage() {
             )}
           </label>
 
-          <label className="block space-y-1">
+          <label className="block space-y-1 md:space-y-2">
             <span className="text-xs font-medium text-muted-foreground">
               New password
             </span>
@@ -110,7 +115,7 @@ function ResetPasswordPage() {
               value={form.newPassword}
               onChange={(e) => updateField('newPassword', e.target.value)}
               disabled={state.loading}
-              className="h-10 w-full rounded-sm border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:border-muted-foreground"
+              className="h-12 w-full rounded-sm border border-input bg-background px-3 text-sm focus-visible:border-muted-foreground focus-visible:outline-none"
             />
             {errors.newPassword && (
               <span className="text-xs text-red-500">
@@ -119,7 +124,7 @@ function ResetPasswordPage() {
             )}
           </label>
 
-          <label className="block space-y-1">
+          <label className="block space-y-1 md:space-y-2">
             <span className="text-xs font-medium text-muted-foreground">
               Confirm new password
             </span>
@@ -128,7 +133,7 @@ function ResetPasswordPage() {
               value={form.confirmPassword}
               onChange={(e) => updateField('confirmPassword', e.target.value)}
               disabled={state.loading}
-              className="h-10 w-full rounded-sm border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:border-muted-foreground"
+              className="h-12 w-full rounded-sm border border-input bg-background px-3 text-sm focus-visible:border-muted-foreground focus-visible:outline-none"
             />
             {errors.confirmPassword && (
               <span className="text-xs text-red-500">
@@ -138,13 +143,12 @@ function ResetPasswordPage() {
           </label>
         </div>
 
-        <div className="mt-6 flex justify-center">
+        <div className="mt-8 md:mt-10">
           <button
             type="submit"
             disabled={state.loading}
-            className="inline-flex items-center gap-2 rounded-full bg-foreground px-6 py-2 text-xs font-medium text-white hover:bg-muted-foreground disabled:opacity-60"
+            className="inline-flex h-12 min-w-[200px] items-center justify-center rounded-full bg-foreground px-6 text-xs font-medium text-white hover:bg-muted-foreground disabled:opacity-60"
           >
-            <Save className="h-4 w-4" />
             Reset password
           </button>
         </div>
@@ -152,18 +156,23 @@ function ResetPasswordPage() {
 
       {confirmOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="w-full max-w-xs rounded-sm bg-background px-6 py-7 text-center shadow-lg">
-            <div className="mb-5 flex justify-end">
-              <button
-                type="button"
-                onClick={() => setConfirmOpen(false)}
-                className="rounded-full p-1 hover:bg-[#EFEEEB]"
-                aria-label="Close reset password dialog"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-            <h2 className="text-lg font-bold">Reset password</h2>
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="reset-password-dialog-title"
+            className="relative flex min-h-[260px] w-full max-w-[480px] flex-col items-center justify-center rounded-sm bg-background px-6 py-8 text-center shadow-lg sm:px-10"
+          >
+            <button
+              type="button"
+              onClick={() => setConfirmOpen(false)}
+              className="absolute right-4 top-4 rounded-full p-1 hover:bg-[#EFEEEB]"
+              aria-label="Close reset password dialog"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <h2 id="reset-password-dialog-title" className="text-lg font-bold">
+              Reset password
+            </h2>
             <p className="mt-3 text-xs text-muted-foreground">
               Do you want to reset your password?
             </p>
@@ -171,7 +180,7 @@ function ResetPasswordPage() {
               <button
                 type="button"
                 onClick={() => setConfirmOpen(false)}
-                className="rounded-full border border-foreground px-5 py-2 text-xs font-medium hover:border-muted-foreground hover:text-muted-foreground"
+                className="inline-flex h-10 min-w-[120px] items-center justify-center rounded-full border border-foreground px-5 text-xs font-medium hover:border-muted-foreground hover:text-muted-foreground"
               >
                 Cancel
               </button>
@@ -179,7 +188,7 @@ function ResetPasswordPage() {
                 type="button"
                 onClick={confirmResetPassword}
                 disabled={state.loading}
-                className="rounded-full bg-foreground px-5 py-2 text-xs font-medium text-white hover:bg-muted-foreground disabled:opacity-60"
+                className="inline-flex h-10 min-w-[120px] items-center justify-center rounded-full bg-foreground px-5 text-xs font-medium text-white hover:bg-muted-foreground disabled:opacity-60"
               >
                 Reset
               </button>

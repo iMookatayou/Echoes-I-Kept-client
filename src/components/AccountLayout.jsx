@@ -9,7 +9,8 @@ function AccountLayout({ activePage, children, layout = 'default', title }) {
   const { state } = useAuth()
   const location = useLocation()
   const isAdminPath = location.pathname.startsWith('/admin/')
-  const isProfileLayout = layout === 'profile'
+  const isEnhancedAccountLayout =
+    layout === 'profile' || layout === 'reset-password'
   const profilePath =
     state.user?.role === 'admin' ? '/admin/profile' : '/profile'
   const resetPasswordPath =
@@ -25,24 +26,26 @@ function AccountLayout({ activePage, children, layout = 'default', title }) {
     },
   ]
 
-  const containerClassName = isProfileLayout
+  const containerClassName = isEnhancedAccountLayout
     ? 'mx-auto w-full max-w-[800px]'
     : 'mx-auto w-full max-w-[760px]'
-  const headingClassName = isProfileLayout
+  const headingClassName = isEnhancedAccountLayout
     ? 'mb-6 flex min-w-0 items-center gap-3'
     : 'mb-6 flex items-center gap-3 md:ml-[150px]'
-  const contentClassName = isProfileLayout
+  const contentClassName = isEnhancedAccountLayout
     ? 'grid gap-6 lg:grid-cols-[minmax(160px,200px)_minmax(0,552px)] lg:items-start lg:justify-center xl:gap-12'
     : 'grid gap-6 md:grid-cols-[120px_300px] md:items-start md:justify-center'
-  const avatarClassName = isProfileLayout
+  const avatarClassName = isEnhancedAccountLayout
     ? 'h-12 w-12 rounded-full object-cover'
     : 'h-8 w-8 rounded-full object-cover'
-  const headingTextClassName = isProfileLayout ? 'text-base' : 'text-sm'
-  const accountNavClassName = isProfileLayout ? 'space-y-3' : 'space-y-2'
-  const accountNavLinkClassName = isProfileLayout
+  const headingTextClassName = isEnhancedAccountLayout ? 'text-base' : 'text-sm'
+  const accountNavClassName = isEnhancedAccountLayout
+    ? 'space-y-3'
+    : 'space-y-2'
+  const accountNavLinkClassName = isEnhancedAccountLayout
     ? 'flex min-h-8 items-center gap-3 text-sm leading-5 transition-colors'
     : 'flex items-center gap-2 text-xs transition-colors'
-  const accountNavIconClassName = isProfileLayout
+  const accountNavIconClassName = isEnhancedAccountLayout
     ? 'h-4 w-4 shrink-0'
     : 'h-3 w-3'
 
@@ -55,7 +58,7 @@ function AccountLayout({ activePage, children, layout = 'default', title }) {
             alt={state.user?.name || 'Profile'}
             className={avatarClassName}
           />
-        ) : isProfileLayout ? (
+        ) : isEnhancedAccountLayout ? (
           <div
             className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#7B7974] text-white"
             role="img"
@@ -74,7 +77,9 @@ function AccountLayout({ activePage, children, layout = 'default', title }) {
           {state.user?.name || 'Member'}
         </p>
         <span
-          className={isProfileLayout ? 'h-6 w-px bg-border' : 'h-4 w-px bg-border'}
+          className={
+            isEnhancedAccountLayout ? 'h-6 w-px bg-border' : 'h-4 w-px bg-border'
+          }
           aria-hidden="true"
         />
         <p className={`${headingTextClassName} shrink-0 font-bold`}>{title}</p>
