@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { Edit3, Search, Trash2, X } from 'lucide-react'
+import { Pencil, Plus, Search, Trash2, X } from 'lucide-react'
 import AdminLayout from '../components/AdminLayout'
 import {
   createAdminCategory,
@@ -220,9 +220,10 @@ function AdminCategoryManagementPage() {
         <button
           type="button"
           onClick={openCreate}
-          className="rounded-full bg-foreground px-8 py-2 text-sm font-medium text-white hover:bg-muted-foreground"
+          className="inline-flex items-center gap-2 rounded-full bg-foreground px-8 py-2 text-sm font-medium text-white hover:bg-muted-foreground"
         >
-          + Create category
+          <Plus className="h-4 w-4" aria-hidden="true" />
+          Create category
         </button>
       }
     >
@@ -276,7 +277,7 @@ function AdminCategoryManagementPage() {
                         className="text-muted-foreground hover:text-foreground"
                         aria-label={`Edit ${category.name}`}
                       >
-                        <Edit3 className="h-4 w-4" />
+                        <Pencil className="h-4 w-4" />
                       </button>
                       <button
                         type="button"

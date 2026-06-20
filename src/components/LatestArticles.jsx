@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { Loader2, Search } from 'lucide-react'
+import { ChevronDown, Loader2, Search } from 'lucide-react'
 import ArticleCard from './ArticleCard'
 import { mockCategories } from '../data/mockPosts'
 import {
@@ -174,12 +174,12 @@ function LatestArticles() {
           </div>
         </div>
 
-        <div className="md:hidden w-full">
+        <div className="relative w-full md:hidden">
           <select
             value={selectedCategory}
             onChange={(e) => handleCategoryChange(e.target.value)}
             disabled={loading}
-            className="w-full py-3 rounded-sm text-muted-foreground border border-input bg-background px-3 focus:outline-none focus:border-muted-foreground"
+            className="w-full appearance-none rounded-sm border border-input bg-background px-3 py-3 pr-10 text-muted-foreground focus:outline-none focus:border-muted-foreground"
           >
             <option value="Highlight">Highlight</option>
             {displayCategories.map((cat) => (
@@ -188,6 +188,10 @@ function LatestArticles() {
               </option>
             ))}
           </select>
+          <ChevronDown
+            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
         </div>
 
         {categoriesLoading ? (

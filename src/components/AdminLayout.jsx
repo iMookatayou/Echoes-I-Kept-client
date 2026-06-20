@@ -3,11 +3,11 @@ import { Link, NavLink } from 'react-router-dom'
 import {
   Bell,
   ExternalLink,
-  FileText,
   Folder,
   KeyRound,
   LogOut,
   Menu,
+  NotebookTabs,
   User,
   Users,
   X,
@@ -16,7 +16,7 @@ import { useAuth } from '../context/useAuth'
 
 const navItems = [
   {
-    icon: FileText,
+    icon: NotebookTabs,
     label: 'Article management',
     path: '/admin/article-management',
   },

@@ -1,5 +1,13 @@
 import { useMemo, useState } from 'react'
-import { Edit3, Image, Search, Trash2, X } from 'lucide-react'
+import {
+  ChevronDown,
+  Image,
+  Pencil,
+  Plus,
+  Search,
+  Trash2,
+  X,
+} from 'lucide-react'
 import AdminLayout from '../components/AdminLayout'
 import {
   createAdminArticle,
@@ -235,17 +243,25 @@ function AdminArticleManagementPage() {
               <span className="text-sm font-medium text-muted-foreground">
                 Category
               </span>
-              <select
-                value={form.category}
-                onChange={(event) => updateForm('category', event.target.value)}
-                className="h-10 w-[360px] max-w-full rounded-sm border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:border-muted-foreground"
-              >
-                {categories.map((category) => (
-                  <option key={category.id} value={category.name}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
+              <div className="relative w-[360px] max-w-full">
+                <select
+                  value={form.category}
+                  onChange={(event) =>
+                    updateForm('category', event.target.value)
+                  }
+                  className="h-10 w-full appearance-none rounded-sm border border-input bg-background px-3 pr-10 text-sm focus-visible:outline-none focus-visible:border-muted-foreground"
+                >
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.name}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden="true"
+                />
+              </div>
             </label>
 
             <label className="block space-y-2">
@@ -339,9 +355,10 @@ function AdminArticleManagementPage() {
         <button
           type="button"
           onClick={openCreate}
-          className="rounded-full bg-foreground px-8 py-2 text-sm font-medium text-white hover:bg-muted-foreground"
+          className="inline-flex items-center gap-2 rounded-full bg-foreground px-8 py-2 text-sm font-medium text-white hover:bg-muted-foreground"
         >
-          + Create article
+          <Plus className="h-4 w-4" aria-hidden="true" />
+          Create article
         </button>
       }
     >
@@ -356,27 +373,39 @@ function AdminArticleManagementPage() {
           />
         </div>
         <div className="hidden md:block" />
-        <select
-          value={statusFilter}
-          onChange={(event) => setStatusFilter(event.target.value)}
-          className="h-10 rounded-sm border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:border-muted-foreground"
-        >
-          <option value="all">Status</option>
-          <option value="published">Published</option>
-          <option value="draft">Draft</option>
-        </select>
-        <select
-          value={categoryFilter}
-          onChange={(event) => setCategoryFilter(event.target.value)}
-          className="h-10 rounded-sm border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:border-muted-foreground"
-        >
-          <option value="all">Category</option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.name}>
-              {category.name}
-            </option>
-          ))}
-        </select>
+        <div className="relative">
+          <select
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
+            className="h-10 w-full appearance-none rounded-sm border border-input bg-background px-3 pr-10 text-sm focus-visible:outline-none focus-visible:border-muted-foreground"
+          >
+            <option value="all">Status</option>
+            <option value="published">Published</option>
+            <option value="draft">Draft</option>
+          </select>
+          <ChevronDown
+            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
+        </div>
+        <div className="relative">
+          <select
+            value={categoryFilter}
+            onChange={(event) => setCategoryFilter(event.target.value)}
+            className="h-10 w-full appearance-none rounded-sm border border-input bg-background px-3 pr-10 text-sm focus-visible:outline-none focus-visible:border-muted-foreground"
+          >
+            <option value="all">Category</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.name}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+          <ChevronDown
+            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-sm border border-border">
@@ -410,7 +439,7 @@ function AdminArticleManagementPage() {
                       className="text-muted-foreground hover:text-foreground"
                       aria-label={`Edit ${article.title}`}
                     >
-                      <Edit3 className="h-4 w-4" />
+                      <Pencil className="h-4 w-4" />
                     </button>
                     <button
                       type="button"
