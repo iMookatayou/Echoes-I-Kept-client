@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   ChevronDown,
-  LayoutDashboard,
+  LayoutGrid,
   LogOut,
   Menu,
   User,
@@ -112,7 +112,7 @@ function Navbar() {
                   className="flex w-full cursor-pointer items-center px-3 py-2 text-sm text-foreground hover:rounded-sm hover:bg-[#EFEEEB] hover:text-muted-foreground"
                   role="menuitem"
                 >
-                  <LayoutDashboard className="mr-2 h-4 w-4" />
+                  <LayoutGrid className="mr-2 h-4 w-4" />
                   Admin panel
                 </button>
               )}
@@ -210,7 +210,7 @@ function Navbar() {
                   }}
                   className="flex items-center w-full px-4 py-2 text-base font-medium text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground rounded-sm"
                 >
-                  <LayoutDashboard className="mr-4 h-5 w-5" />
+                  <LayoutGrid className="mr-4 h-5 w-5" />
                   Admin panel
                 </button>
               )}

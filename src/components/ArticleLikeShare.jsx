@@ -1,63 +1,5 @@
 import { Copy, Heart } from 'lucide-react'
-
-function FacebookIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-    </svg>
-  )
-}
-
-function LinkedInIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-      <rect width="4" height="12" x="2" y="9" />
-      <circle cx="4" cy="4" r="2" />
-    </svg>
-  )
-}
-
-function TwitterIcon() {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5 5.5 10 9 7.5 7.1 3.1 3.8 4.8 2 4c3.2 0 6.4-1.3 8-4z" />
-    </svg>
-  )
-}
+import BrandIcon from './BrandIcon'
 
 function ArticleLikeShare({ likesAmount, onLike }) {
   const shareUrl = encodeURI(window.location.href)
@@ -99,7 +41,10 @@ function ArticleLikeShare({ likesAmount, onLike }) {
             className="bg-white p-3 rounded-full border text-foreground border-foreground hover:border-muted-foreground hover:text-muted-foreground transition-colors"
             aria-label="Share on Facebook"
           >
-            <FacebookIcon />
+            <BrandIcon
+              src="/figma-assets/Facebook_black.svg"
+              className="h-6 w-6"
+            />
           </a>
 
           <a
@@ -109,7 +54,10 @@ function ArticleLikeShare({ likesAmount, onLike }) {
             className="bg-white p-3 rounded-full border text-foreground border-foreground hover:border-muted-foreground hover:text-muted-foreground transition-colors"
             aria-label="Share on LinkedIn"
           >
-            <LinkedInIcon />
+            <BrandIcon
+              src="/figma-assets/LinkedIN_black.svg"
+              className="h-6 w-6"
+            />
           </a>
 
           <a
@@ -119,7 +67,10 @@ function ArticleLikeShare({ likesAmount, onLike }) {
             className="bg-white p-3 rounded-full border text-foreground border-foreground hover:border-muted-foreground hover:text-muted-foreground transition-colors"
             aria-label="Share on Twitter"
           >
-            <TwitterIcon />
+            <BrandIcon
+              src="/figma-assets/Twitter_black.svg"
+              className="h-6 w-6"
+            />
           </a>
         </div>
       </div>

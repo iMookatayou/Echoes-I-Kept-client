@@ -1,5 +1,13 @@
 import { useMemo, useState } from 'react'
-import { Edit3, Search, Trash2, UserRound, X } from 'lucide-react'
+import {
+  ChevronDown,
+  Pencil,
+  Plus,
+  Search,
+  Trash2,
+  UserRound,
+  X,
+} from 'lucide-react'
 import AdminLayout from '../components/AdminLayout'
 import {
   createAdminMember,
@@ -314,17 +322,23 @@ function AdminMemberManagementPage() {
               <span className="text-sm font-medium text-muted-foreground">
                 Role
               </span>
-              <select
-                value={form.role}
-                onChange={(event) => updateForm('role', event.target.value)}
-                className="h-10 w-[360px] max-w-full rounded-sm border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:border-muted-foreground"
-              >
-                {roleOptions.map((role) => (
-                  <option key={role.value} value={role.value}>
-                    {role.label}
-                  </option>
-                ))}
-              </select>
+              <div className="relative w-[360px] max-w-full">
+                <select
+                  value={form.role}
+                  onChange={(event) => updateForm('role', event.target.value)}
+                  className="h-10 w-full appearance-none rounded-sm border border-input bg-background px-3 pr-10 text-sm focus-visible:outline-none focus-visible:border-muted-foreground"
+                >
+                  {roleOptions.map((role) => (
+                    <option key={role.value} value={role.value}>
+                      {role.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                  aria-hidden="true"
+                />
+              </div>
               {errors.role && (
                 <span className="text-xs text-red-500">{errors.role}</span>
               )}
@@ -362,9 +376,10 @@ function AdminMemberManagementPage() {
         <button
           type="button"
           onClick={openCreate}
-          className="rounded-full bg-foreground px-8 py-2 text-sm font-medium text-white hover:bg-muted-foreground"
+          className="inline-flex items-center gap-2 rounded-full bg-foreground px-8 py-2 text-sm font-medium text-white hover:bg-muted-foreground"
         >
-          + Create member
+          <Plus className="h-4 w-4" aria-hidden="true" />
+          Create member
         </button>
       }
     >
@@ -391,15 +406,21 @@ function AdminMemberManagementPage() {
           />
         </div>
         <div className="hidden md:block" />
-        <select
-          value={roleFilter}
-          onChange={(event) => setRoleFilter(event.target.value)}
-          className="h-10 rounded-sm border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:border-muted-foreground"
-        >
-          <option value="all">Role</option>
-          <option value="admin">Admin</option>
-          <option value="user">Member</option>
-        </select>
+        <div className="relative">
+          <select
+            value={roleFilter}
+            onChange={(event) => setRoleFilter(event.target.value)}
+            className="h-10 w-full appearance-none rounded-sm border border-input bg-background px-3 pr-10 text-sm focus-visible:outline-none focus-visible:border-muted-foreground"
+          >
+            <option value="all">Role</option>
+            <option value="admin">Admin</option>
+            <option value="user">Member</option>
+          </select>
+          <ChevronDown
+            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden="true"
+          />
+        </div>
       </div>
 
       <div className="overflow-hidden rounded-sm border border-border">
@@ -471,7 +492,7 @@ function AdminMemberManagementPage() {
                           className="text-muted-foreground hover:text-foreground"
                           aria-label={`Edit ${member.name}`}
                         >
-                          <Edit3 className="h-4 w-4" />
+                          <Pencil className="h-4 w-4" />
                         </button>
                         <button
                           type="button"
