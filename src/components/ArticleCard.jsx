@@ -16,7 +16,7 @@ function ArticleCard({
     <article className="flex flex-col gap-4">
       <Link
         to={postPath}
-        className="relative block h-[212px] sm:h-[360px] overflow-hidden rounded-md"
+        className="relative block aspect-[1.65/1] overflow-hidden rounded-md"
       >
         <img
           className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
