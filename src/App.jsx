@@ -5,6 +5,7 @@ import GuestRoute from "./components/GuestRoute";
 import ProtectedRoute from "./components/ProtectedRoute";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
+import AdminLoginPage from "./pages/admin/AdminLoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import PostDetailPage from "./pages/PostDetailPage";
 import AdminArticleManagementPage from "./pages/AdminArticleManagementPage";
@@ -84,6 +85,10 @@ function App() {
                 <ResetPasswordPage />
               </AdminRoute>
             }
+          />
+          <Route
+            path="/admin/login"
+            element={<AdminLoginPage />}
           />
           <Route
             path="/login"

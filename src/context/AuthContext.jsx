@@ -22,7 +22,7 @@ export function AuthProvider({ children }) {
         loading: false,
         error: null,
       }))
-      return null
+      return { user: result.user }
     } catch (err) {
       const message = err.response?.data?.error || 'Login failed'
       setState((prev) => ({ ...prev, loading: false, error: message }))
