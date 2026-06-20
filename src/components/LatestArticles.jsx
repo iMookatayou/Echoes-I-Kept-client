@@ -110,6 +110,8 @@ function LatestArticles() {
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category)
+    setKeyword('')
+    setSearchResults([])
     setPosts([])
     setPage(1)
     setHasMore(true)
@@ -125,18 +127,20 @@ function LatestArticles() {
 
   const displayCategories = categories.length > 0 ? categories : mockCategories
   const isInitialLoading = loading && page === 1 && posts.length === 0
+  const visiblePosts = keyword ? searchResults : posts
 
   return (
-    <div className="w-full max-w-7xl mx-auto md:px-6 lg:px-8 mb-20">
-      <h2 className="text-xl font-bold mb-4 px-4">Latest articles</h2>
+    <section className="mx-auto mb-20 w-full max-w-[1040px] px-4 sm:px-6 lg:px-0">
+      <h2 className="mb-4 text-xl font-bold">Latest articles</h2>
 
-      <div className="bg-[#EFEEEB] px-4 py-4 md:py-3 md:rounded-sm flex flex-col space-y-4 md:gap-16 md:flex-row-reverse md:items-center md:space-y-0 md:justify-between mb-10">
-        <div className="w-full md:max-w-sm">
+      <div className="mb-10 flex flex-col gap-4 rounded-sm bg-[#EFEEEB] px-4 py-4 md:flex-row-reverse md:items-center md:justify-between md:gap-10 md:py-3">
+        <div className="w-full md:max-w-[320px]">
           <div className="relative">
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+            <Search className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
             <input
               type="text"
               placeholder="Search"
+              value={keyword}
               className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-muted-foreground"
               onChange={(e) => {
                 const value = e.target.value
@@ -145,6 +149,7 @@ function LatestArticles() {
                   setLoading(true)
                 } else {
                   setSearchResults([])
+                  setLoading(false)
                 }
               }}
               onFocus={() => setSearchOpen(true)}
@@ -236,9 +241,9 @@ function LatestArticles() {
           <Loader2 className="h-10 w-10 animate-spin text-foreground" />
           <p className="mt-4 font-medium">Loading...</p>
         </div>
-      ) : posts.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 px-4 md:px-0">
-          {posts.map((post) => (
+      ) : visiblePosts.length > 0 ? (
+        <div className="grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2">
+          {visiblePosts.map((post) => (
             <ArticleCard
               key={post.id}
               id={post.id}
@@ -253,10 +258,10 @@ function LatestArticles() {
           ))}
         </div>
       ) : (
-        <p className="px-4 text-muted-foreground">No articles found.</p>
+        <p className="text-muted-foreground">No articles found.</p>
       )}
 
-      {hasMore && !isInitialLoading && (
+      {hasMore && !isInitialLoading && !keyword && (
         <div className="text-center mt-20">
           <button
             type="button"
@@ -278,7 +283,7 @@ function LatestArticles() {
           </button>
         </div>
       )}
-    </div>
+    </section>
   )
 }
 
