@@ -4,6 +4,8 @@ export function avatarUrl(name, background = '4A5568') {
   )}&background=${background}&color=fff&size=128&bold=true`
 }
 
+export const SITE_AUTHOR_AVATAR = '/avatars/anime.jpg'
+
 export const mockUsers = [
   {
     id: 1,
@@ -16,15 +18,15 @@ export const mockUsers = [
   },
   {
     id: 2,
-    name: 'Thompson P.',
-    username: 'thompson',
+    name: 'Techin B.',
+    username: 'techin',
     email: 'admin@test.com',
     password: 'admin1234',
     role: 'admin',
-    profilePic: '/author-image.jpeg',
+    profilePic: SITE_AUTHOR_AVATAR,
     bio: [
-      'I am a pet enthusiast and freelance writer who specializes in animal behavior and care. With a deep love for cats, I enjoy sharing insights on feline companionship and wellness.',
-      "When I'm not writing, I spend time volunteering at my local animal shelter, helping cats find loving homes.",
+      'I write about the artists whose music stays with me, from polished pop and alternative moods to after-dark R&B.',
+      'Each article begins with the artist and ends with my best pick: the song I keep returning to and why it matters to me.',
     ],
   },
   {

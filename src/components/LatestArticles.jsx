@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { ChevronDown, Loader2, Search } from 'lucide-react'
+import { ChevronDown, Loader2, Search, X } from 'lucide-react'
 import ArticleCard from './ArticleCard'
-import { mockCategories } from '../data/mockPosts'
+import { mockCategories, searchMockPosts } from '../data/mockPosts'
 import {
   getAdminCategories,
   hasAdminCategoryStore,
@@ -24,7 +24,6 @@ function LatestArticles() {
   const [hasMore, setHasMore] = useState(true)
   const [loading, setLoading] = useState(true)
   const [keyword, setKeyword] = useState('')
-  const [searchResults, setSearchResults] = useState([])
   const [searchOpen, setSearchOpen] = useState(false)
   const [categories, setCategories] = useState(() =>
     hasAdminCategoryStore() ? getAdminCategories() : [],
@@ -89,29 +88,17 @@ function LatestArticles() {
     }
   }, [page, selectedCategory, useMockData])
 
-  useEffect(() => {
-    if (keyword.length === 0) return
+  const searchResults = useMemo(() => {
+    if (!keyword.trim()) return []
 
-    const fetchSearchResults = () => {
-      if (useMockData || hasAdminArticleStore()) {
-        return Promise.resolve(searchPublishedAdminArticles(keyword))
-      }
-      return axios
-        .get(`${API_BASE}/posts?keyword=${keyword}`)
-        .then((res) => res.data.posts)
-        .catch(() => searchPublishedAdminArticles(keyword))
-    }
-
-    fetchSearchResults().then((results) => {
-      setSearchResults(results)
-      setLoading(false)
-    })
-  }, [keyword, useMockData])
+    return hasAdminArticleStore()
+      ? searchPublishedAdminArticles(keyword)
+      : searchMockPosts(keyword)
+  }, [keyword])
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category)
     setKeyword('')
-    setSearchResults([])
     setPosts([])
     setPage(1)
     setHasMore(true)
@@ -127,7 +114,12 @@ function LatestArticles() {
 
   const displayCategories = categories.length > 0 ? categories : mockCategories
   const isInitialLoading = loading && page === 1 && posts.length === 0
-  const visiblePosts = keyword ? searchResults : posts
+  const visiblePosts = keyword.trim() ? searchResults : posts
+
+  const clearSearch = () => {
+    setKeyword('')
+    setLoading(false)
+  }
 
   return (
     <section className="mx-auto mb-20 w-full max-w-[1040px] px-4 sm:px-6 lg:px-0">
@@ -136,21 +128,26 @@ function LatestArticles() {
       <div className="mb-10 flex flex-col gap-4 rounded-sm bg-[#EFEEEB] px-4 py-4 md:flex-row-reverse md:items-center md:justify-between md:gap-10 md:py-3">
         <div className="w-full md:max-w-[320px]">
           <div className="relative">
-            <Search className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400" />
+            {keyword ? (
+              <button
+                type="button"
+                aria-label="Clear search"
+                onClick={clearSearch}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-muted-foreground"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            ) : (
+              <Search className="absolute right-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            )}
             <input
               type="text"
               placeholder="Search"
               value={keyword}
-              className="flex h-10 w-full rounded-sm border border-input bg-background px-3 py-3 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-muted-foreground"
+              className="flex h-10 w-full rounded-sm border border-input bg-background py-3 pl-3 pr-10 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-muted-foreground"
               onChange={(e) => {
-                const value = e.target.value
-                setKeyword(value)
-                if (value.length > 0) {
-                  setLoading(true)
-                } else {
-                  setSearchResults([])
-                  setLoading(false)
-                }
+                setKeyword(e.target.value)
+                setLoading(false)
               }}
               onFocus={() => setSearchOpen(true)}
               onBlur={() => {
@@ -261,7 +258,7 @@ function LatestArticles() {
         <p className="text-muted-foreground">No articles found.</p>
       )}
 
-      {hasMore && !isInitialLoading && !keyword && (
+      {hasMore && !isInitialLoading && !keyword.trim() && (
         <div className="text-center mt-20">
           <button
             type="button"

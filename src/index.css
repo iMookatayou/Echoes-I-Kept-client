@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Space+Grotesk:wght@400;500;600&display=swap");
 @import "tailwindcss";
 
 :root {
@@ -26,6 +26,7 @@
 
 @theme {
   --font-sans: "Poppins", sans-serif;
+  --font-display: "Space Grotesk", sans-serif;
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
   --color-muted: hsl(var(--muted));
@@ -78,4 +79,43 @@ body {
 
 #root {
   min-height: 100vh;
+}
+
+@keyframes vinyl-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes album-cover-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.vinyl-record {
+  background:
+    radial-gradient(circle at center, transparent 0 19%, rgb(7 7 7) 19.5% 21%, transparent 21.5%),
+    repeating-radial-gradient(circle at center, #191919 0 2px, #0c0c0c 3px 5px);
+}
+
+.vinyl-spin {
+  animation: vinyl-spin 9s linear infinite;
+}
+
+.album-cover-in {
+  animation: album-cover-in 360ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vinyl-spin,
+  .album-cover-in {
+    animation: none;
+  }
 }
