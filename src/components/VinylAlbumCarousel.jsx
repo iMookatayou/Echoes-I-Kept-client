@@ -42,7 +42,8 @@ function VinylAlbumCarousel({ tracks }) {
               <img
                 src={activeTrack.image}
                 alt=""
-                className="h-full w-full object-cover"
+                draggable={false}
+                className="pointer-events-none h-full w-full select-none object-cover"
               />
               <span className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#eeeae2] shadow-[0_0_0_2px_rgba(0,0,0,0.7)]" />
             </div>
@@ -53,21 +54,23 @@ function VinylAlbumCarousel({ tracks }) {
           type="button"
           onClick={selectNextTrack}
           aria-label={`Show next song. Currently showing ${activeTrack.bestPick} by ${activeTrack.artist}`}
-          className="group absolute -left-[4%] top-1/2 z-10 aspect-square w-[72%] -translate-y-1/2 overflow-hidden rounded-[4px] bg-neutral-100 text-left shadow-[0_14px_30px_rgba(0,0,0,0.22)] outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-4"
+          className="group absolute -left-[4%] top-1/2 z-10 aspect-square w-[72%] -translate-y-1/2 overflow-hidden rounded-[4px] bg-black text-left shadow-[0_14px_30px_rgba(0,0,0,0.22)] outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-4"
         >
           {previousTrack && (
             <img
               src={previousTrack.image}
               alt=""
               aria-hidden="true"
-              className="album-cover-out absolute inset-0 z-10 h-full w-full object-cover"
+              draggable={false}
+              className="pointer-events-none absolute inset-0 z-10 h-full w-full select-none object-cover"
             />
           )}
           <img
             key={activeTrack.id}
             src={activeTrack.image}
             alt={`${activeTrack.artist} album artwork for ${activeTrack.bestPick}`}
-            className="album-cover-in absolute inset-0 z-20 h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.015] motion-reduce:transition-none"
+            draggable={false}
+            className="album-cover-in pointer-events-none absolute inset-0 z-20 h-full w-full select-none object-cover transition-transform duration-300 group-hover:scale-[1.015] motion-reduce:transition-none"
           />
         </button>
       </div>

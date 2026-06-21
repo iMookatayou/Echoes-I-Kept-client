@@ -269,7 +269,7 @@ function AdminArticleManagementPage() {
                 Author name
               </span>
               <input
-                value="Thompson P."
+                value="Techin B."
                 disabled
                 className="h-10 w-[360px] max-w-full rounded-sm border border-transparent bg-[#FAFAF9] px-3 text-sm text-muted-foreground"
               />

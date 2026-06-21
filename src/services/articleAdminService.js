@@ -1,4 +1,5 @@
 import { mockPosts } from '../data/mockPosts'
+import { SITE_AUTHOR_AVATAR } from '../data/mockUsers'
 
 const STORAGE_KEY = 'adminArticles'
 
@@ -30,6 +31,9 @@ function mergeDetailImagesFromMock(articles) {
       detailImage: mock.detailImage,
       detailImagePosition:
         mock.detailImagePosition ?? article.detailImagePosition,
+      author: mock.author,
+      authorAvatar: mock.authorAvatar,
+      authorBio: mock.authorBio,
     }
   })
 }
@@ -116,8 +120,8 @@ export function createAdminArticle(form, status) {
     title: form.title,
     description: form.description,
     authorId: 2,
-    author: 'Thompson P.',
-    authorAvatar: '/author-image.jpeg',
+    author: 'Techin B.',
+    authorAvatar: SITE_AUTHOR_AVATAR,
     authorBio: [
       'I write about the artists whose music stays with me, from polished pop and alternative moods to after-dark R&B.',
       'Each article begins with the artist and ends with my best pick: the song I keep returning to and why it matters to me.',

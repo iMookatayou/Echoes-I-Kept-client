@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { getCategoryTagStyles } from '../utils/categoryStyles'
 
 function ArticleCard({
   id,
@@ -7,7 +8,7 @@ function ArticleCard({
   title,
   description,
   author,
-  authorAvatar = '/author-image.jpeg',
+  authorAvatar = '/avatars/anime.jpg',
   date,
 }) {
   const postPath = `/post/${id}`
@@ -27,7 +28,9 @@ function ArticleCard({
       </Link>
 
       <div className="flex flex-col gap-2">
-        <span className="inline-flex w-fit rounded-full bg-green-200 px-3 py-1 text-sm font-semibold text-green-700">
+        <span
+          className={`inline-flex w-fit rounded-full px-3 py-1 text-sm font-semibold ring-1 ring-inset ${getCategoryTagStyles(category)}`}
+        >
           {category}
         </span>
 

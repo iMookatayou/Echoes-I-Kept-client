@@ -19,6 +19,7 @@ import {
   getPublishedAdminArticleById,
   hasAdminArticleStore,
 } from '../services/articleAdminService'
+import { getCategoryTagStyles } from '../utils/categoryStyles'
 
 const API_BASE = 'https://blog-post-project-api-with-db.vercel.app'
 
@@ -210,7 +211,9 @@ function PostDetailPage() {
             <div className="xl:w-3/4 space-y-8">
               <article className="px-4">
                 <div className="flex">
-                  <span className="bg-green-200 rounded-full px-3 py-1 text-sm font-semibold text-green-600 mb-2">
+                  <span
+                    className={`mb-2 rounded-full px-3 py-1 text-sm font-semibold ring-1 ring-inset ${getCategoryTagStyles(post?.category)}`}
+                  >
                     {post?.category}
                   </span>
                   {dateString && (

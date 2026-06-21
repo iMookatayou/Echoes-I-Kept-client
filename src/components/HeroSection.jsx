@@ -1,5 +1,5 @@
-import { mockPosts } from '../data/mockPosts'
-import VinylAlbumCarousel from './VinylAlbumCarousel'
+import { mockPosts } from "../data/mockPosts";
+import VinylAlbumCarousel from "./VinylAlbumCarousel";
 
 function HeroSection() {
   const heroTracks = mockPosts.map(
@@ -10,7 +10,7 @@ function HeroSection() {
       image,
       spotifyUrl,
     }),
-  )
+  );
 
   return (
     <main className="mx-auto overflow-hidden px-4 py-12 md:px-8 md:py-14 lg:w-[clamp(960px,92vw,1380px)] lg:px-0 lg:pb-28 lg:pt-16">
@@ -20,8 +20,8 @@ function HeroSection() {
             A personal listening journal
           </p>
           <h1 className="mb-5 leading-none">
-            <span className="block text-[42px] font-bold sm:text-5xl lg:text-[46px] xl:text-5xl">
-              Artists I Love,
+            <span className="font-display block whitespace-nowrap text-[42px] font-medium sm:text-5xl lg:text-[46px] xl:text-5xl">
+              Artists I Love
             </span>
             <span className="font-display mt-2 block text-[44px] font-medium text-muted-foreground sm:text-[52px] lg:text-[50px] xl:text-[54px]">
               Songs I Keep
@@ -32,7 +32,8 @@ function HeroSection() {
             song from each of them that means the most to me.
           </p>
           <p className="mt-5 text-[13px] font-medium text-foreground">
-            06 artists&nbsp;&nbsp;·&nbsp;&nbsp;06 songs&nbsp;&nbsp;·&nbsp;&nbsp;one best pick each
+            06 artists&nbsp;&nbsp;·&nbsp;&nbsp;06
+            songs&nbsp;&nbsp;·&nbsp;&nbsp;one best pick each
           </p>
         </div>
 
@@ -44,9 +45,7 @@ function HeroSection() {
           <h2 className="mb-2 text-xs font-semibold uppercase leading-4 text-muted-foreground">
             A note from
           </h2>
-          <h3 className="mb-4 text-2xl font-bold leading-8">
-            Thompson P.
-          </h3>
+          <h3 className="mb-4 text-2xl font-display leading-8">Techin B.</h3>
           <p className="mb-5 text-[15px] font-medium italic leading-[1.55] text-foreground">
             I keep this journal for the songs that turn ordinary moments into
             memories.
@@ -58,7 +57,7 @@ function HeroSection() {
         </div>
       </div>
     </main>
-  )
+  );
 }
 
-export default HeroSection
+export default HeroSection;
