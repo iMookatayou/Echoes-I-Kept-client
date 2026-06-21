@@ -9,6 +9,8 @@ export const mockCategories = [
 const rawMockPosts = [
   {
     id: 1,
+    artist: "Billie Eilish",
+    bestPick: "Birds of a Feather",
     image: "/music-covers/Billie_Eilish.webp",
     detailImage: "/music-covers/Billie_Eilish_Wallpaper.webp",
     category: "Alternative",
@@ -35,6 +37,8 @@ I return to this song because it captures devotion without making the feeling co
   },
   {
     id: 2,
+    artist: "Charlie Puth",
+    bestPick: "We Don't Talk Anymore",
     image: "/music-covers/Charlie_Puth.webp",
     detailImage: "/music-covers/Charlie_Puth_Wallpaper.webp",
     category: "Pop",
@@ -61,6 +65,8 @@ This is the Charlie Puth song I revisit most because it sounds calm while carryi
   },
   {
     id: 3,
+    artist: "The Neighbourhood",
+    bestPick: "Reflections",
     image: "/music-covers/The_Neighbourhood.webp",
     detailImage: "/music-covers/The_Neighbourhood_Wallpaper.webp",
     category: "Alternative",
@@ -87,6 +93,8 @@ This track works for me because it captures the moment when memory and reality b
   },
   {
     id: 4,
+    artist: "Taylor Swift",
+    bestPick: "Daylight",
     image: "/music-covers/Taylor_Swift.webp",
     detailImage: "/music-covers/Taylor_Swift_Wallpaper.webp",
     category: "Pop",
@@ -113,6 +121,8 @@ I come back to Daylight because it feels earned. Its warmth arrives after uncert
   },
   {
     id: 5,
+    artist: "Katy Perry",
+    bestPick: "The One That Got Away",
     image: "/music-covers/Katy_Perry.webp",
     detailImage: "/music-covers/Katy_Perry_Wallpaper.webp",
     category: "Pop",
@@ -139,6 +149,8 @@ I like this song because it treats regret with tenderness rather than drama. It 
   },
   {
     id: 6,
+    artist: "The Weeknd",
+    bestPick: "Lost in the Fire",
     image: "/music-covers/Gesaffelstein_The_Weeknd.webp",
     detailImage: "/music-covers/Gesaffelstein_The_Weeknd_Wallpaper.webp",
     detailImagePosition: "center 35%",

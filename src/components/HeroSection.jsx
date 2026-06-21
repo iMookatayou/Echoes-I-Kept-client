@@ -1,7 +1,17 @@
+import { mockPosts } from '../data/mockPosts'
+import VinylAlbumCarousel from './VinylAlbumCarousel'
+
 function HeroSection() {
+  const heroTracks = mockPosts.map(({ id, artist, bestPick, image }) => ({
+    id,
+    artist,
+    bestPick,
+    image,
+  }))
+
   return (
-    <main className="mx-auto px-4 py-8 md:px-8 lg:w-[clamp(780px,59vw,1052px)] lg:px-0 lg:pb-[clamp(64px,5vw,96px)] lg:pt-[clamp(40px,4vw,72px)]">
-      <div className="flex flex-col items-center lg:grid lg:[grid-template-columns:clamp(224px,17vw,300px)_clamp(252px,19vw,340px)_clamp(224px,17vw,300px)] lg:items-center lg:gap-x-[clamp(40px,3vw,56px)]">
+    <main className="mx-auto overflow-hidden px-4 py-8 md:px-8 lg:w-[clamp(900px,76vw,1180px)] lg:px-0 lg:pb-[clamp(64px,5vw,96px)] lg:pt-[clamp(40px,4vw,72px)]">
+      <div className="flex flex-col items-center lg:grid lg:[grid-template-columns:clamp(240px,20vw,300px)_clamp(360px,32vw,440px)_clamp(240px,20vw,300px)] lg:items-center lg:gap-x-[clamp(32px,3vw,48px)]">
         <div className="mb-8 max-w-[360px] text-center lg:mb-0 lg:w-[clamp(270px,20vw,360px)] lg:max-w-none lg:justify-self-end lg:text-right">
           <h1 className="mb-5 text-4xl font-bold leading-tight lg:text-[clamp(36px,2.5vw,44px)] lg:leading-[1.1]">
             Artists I Love, <br />
@@ -13,11 +23,9 @@ function HeroSection() {
           </p>
         </div>
 
-        <img
-          src="/author-image.jpeg"
-          alt="Blog author"
-          className="mb-8 h-[420px] w-full max-w-[360px] rounded-lg object-cover shadow-lg sm:h-[480px] sm:max-w-[420px] md:h-[530px] md:max-w-[520px] lg:mb-0 lg:h-[clamp(342px,26vw,460px)] lg:w-[clamp(252px,19vw,340px)] lg:max-w-none"
-        />
+        <div className="mb-8 flex w-full max-w-[440px] justify-center lg:mb-0">
+          <VinylAlbumCarousel tracks={heroTracks} />
+        </div>
 
         <div className="max-w-[360px] lg:max-w-none">
           <h2 className="mb-2 text-xs font-medium leading-4 lg:text-[clamp(10px,0.7vw,12px)] lg:leading-[1.4]">

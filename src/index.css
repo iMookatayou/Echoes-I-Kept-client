@@ -79,3 +79,59 @@ body {
 #root {
   min-height: 100vh;
 }
+
+@keyframes vinyl-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes album-cover-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes album-cover-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.02);
+  }
+}
+
+.vinyl-record {
+  background:
+    radial-gradient(circle at center, transparent 0 19%, rgb(7 7 7) 19.5% 21%, transparent 21.5%),
+    repeating-radial-gradient(circle at center, #191919 0 2px, #0c0c0c 3px 5px);
+}
+
+.vinyl-spin {
+  animation: vinyl-spin 9s linear infinite;
+}
+
+.album-cover-in {
+  animation: album-cover-in 360ms ease-out both;
+}
+
+.album-cover-out {
+  animation: album-cover-out 360ms ease-in both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vinyl-spin,
+  .album-cover-in,
+  .album-cover-out {
+    animation: none;
+  }
+}
