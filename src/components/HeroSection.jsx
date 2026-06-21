@@ -23,7 +23,7 @@ function HeroSection() {
             <span className="block text-[42px] font-bold sm:text-5xl lg:text-[46px] xl:text-5xl">
               Artists I Love,
             </span>
-            <span className="font-display mt-2 block text-[44px] text-muted-foreground sm:text-[52px] lg:text-[50px] xl:text-[54px]">
+            <span className="font-display mt-2 block text-[44px] font-medium text-muted-foreground sm:text-[52px] lg:text-[50px] xl:text-[54px]">
               Songs I Keep
             </span>
           </h1>
