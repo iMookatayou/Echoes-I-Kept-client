@@ -2,6 +2,15 @@ import { mockPosts } from '../data/mockPosts'
 
 const STORAGE_KEY = 'adminArticles'
 
+const LEGACY_SEED_TITLES = new Set([
+  'Understanding Cat Behavior: Why Your Feline Friend Acts the Way They Do',
+  'The Fascinating World of Cats: Why We Love Them',
+])
+
+function isLegacySeed(articles) {
+  return articles.some((article) => LEGACY_SEED_TITLES.has(article.title))
+}
+
 function toAdminArticle(post) {
   return {
     ...post,
@@ -10,12 +19,30 @@ function toAdminArticle(post) {
   }
 }
 
+function mergeDetailImagesFromMock(articles) {
+  return articles.map((article) => {
+    const mock = mockPosts.find((post) => post.id === article.id)
+    if (!mock) return article
+
+    return {
+      ...article,
+      image: mock.image,
+      detailImage: mock.detailImage,
+      detailImagePosition:
+        mock.detailImagePosition ?? article.detailImagePosition,
+    }
+  })
+}
+
 export function getAdminArticles() {
   const stored = localStorage.getItem(STORAGE_KEY)
 
   if (stored) {
     try {
-      return JSON.parse(stored)
+      const articles = JSON.parse(stored)
+      if (Array.isArray(articles) && !isLegacySeed(articles)) {
+        return mergeDetailImagesFromMock(articles)
+      }
     } catch {
       localStorage.removeItem(STORAGE_KEY)
     }
@@ -67,12 +94,15 @@ export function getPublishedAdminArticlesByCategory(
 }
 
 export function searchPublishedAdminArticles(keyword) {
-  const lower = keyword.toLowerCase()
+  const lower = keyword.trim().toLowerCase()
+  if (!lower) return []
+
   return getPublishedAdminArticles().filter(
     (article) =>
       article.title.toLowerCase().includes(lower) ||
       article.description.toLowerCase().includes(lower) ||
-      article.category.toLowerCase().includes(lower),
+      article.category.toLowerCase().includes(lower) ||
+      article.author?.toLowerCase().includes(lower),
   )
 }
 
@@ -89,8 +119,8 @@ export function createAdminArticle(form, status) {
     author: 'Thompson P.',
     authorAvatar: '/author-image.jpeg',
     authorBio: [
-      'I am a pet enthusiast and freelance writer who specializes in animal behavior and care. With a deep love for cats, I enjoy sharing insights on feline companionship and wellness.',
-      "When I'm not writing, I spend time volunteering at my local animal shelter, helping cats find loving homes.",
+      'I write about the artists whose music stays with me, from polished pop and alternative moods to after-dark R&B.',
+      'Each article begins with the artist and ends with my best pick: the song I keep returning to and why it matters to me.',
     ],
     date: today,
     content: form.content,

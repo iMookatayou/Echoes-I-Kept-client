@@ -19,7 +19,7 @@ import { getAdminCategories } from '../services/categoryAdminService'
 
 const emptyForm = {
   title: '',
-  category: 'Cat',
+  category: 'Pop',
   image: '',
   description: '',
   content: '',

@@ -2,7 +2,7 @@ import { mockCommentsByPostId, mockPosts } from '../data/mockPosts'
 import { getMockUserById } from '../data/mockUsers'
 
 const STORAGE_PREFIX = 'notifications'
-const STORAGE_VERSION = '1'
+const STORAGE_VERSION = '2'
 const LEGACY_STORAGE_KEY = 'adminNotifications'
 const LEGACY_VERSION_KEY = 'adminNotificationsVersion'
 const UPDATED_EVENT = 'notifications:updated'
@@ -115,11 +115,6 @@ function saveNotifications(userId, notifications) {
   return notifications
 }
 
-function getLegacyAdminNotifications(user) {
-  if (user.role !== 'admin' || Number(user.id) !== 2) return null
-  return parseStoredNotifications(LEGACY_STORAGE_KEY)
-}
-
 export function getNotifications(user) {
   if (!user?.id) return []
 
@@ -128,8 +123,7 @@ export function getNotifications(user) {
   const storedVersion = localStorage.getItem(versionKey)
 
   if (storedVersion !== STORAGE_VERSION) {
-    const notifications =
-      getLegacyAdminNotifications(user) || getInitialNotifications(user)
+    const notifications = getInitialNotifications(user)
     localStorage.setItem(storageKey, JSON.stringify(notifications))
     localStorage.setItem(versionKey, STORAGE_VERSION)
 

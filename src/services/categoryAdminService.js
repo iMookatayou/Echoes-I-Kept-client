@@ -23,6 +23,13 @@ function normalizeName(name) {
   return name.trim()
 }
 
+function isLegacySeed(categories) {
+  return (
+    Array.isArray(categories) &&
+    categories.some((category) => category.name === 'Cat')
+  )
+}
+
 function createCategoryError(message) {
   return new Error(message)
 }
@@ -30,7 +37,7 @@ function createCategoryError(message) {
 export function getAdminCategories() {
   const stored = parseStoredCategories()
 
-  if (stored) return stored
+  if (Array.isArray(stored) && !isLegacySeed(stored)) return stored
 
   const initialCategories = mockCategories.map(toAdminCategory)
   localStorage.setItem(CATEGORY_STORAGE_KEY, JSON.stringify(initialCategories))

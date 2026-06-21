@@ -11,6 +11,8 @@ import {
   getMockPostById,
   getMockLikesAmount,
   getMockCommentsByPostId,
+  getPostHeroImage,
+  getPostHeroImagePosition,
 } from '../data/mockPosts'
 import { getMockUserById } from '../data/mockUsers'
 import {
@@ -53,13 +55,14 @@ function renderContent(content) {
 
 function PostDetailPage() {
   const { postId } = useParams()
+  const detailImageSource = useMemo(() => getMockPostById(postId), [postId])
   const mockPost = useMemo(() => {
     if (hasAdminArticleStore()) {
       return getPublishedAdminArticleById(postId)
     }
 
-    return getMockPostById(postId)
-  }, [postId])
+    return detailImageSource
+  }, [postId, detailImageSource])
 
   const [loading, setLoading] = useState(true)
   const [post, setPost] = useState(() => mockPost)
@@ -90,7 +93,11 @@ function PostDetailPage() {
         const res = await axios.get(`${API_BASE}/posts/${postId}`)
         if (!mounted) return
 
-        setPost(res.data)
+        setPost({
+          ...res.data,
+          detailImage: detailImageSource?.detailImage,
+          detailImagePosition: detailImageSource?.detailImagePosition,
+        })
         setContent(res.data.content)
 
         try {
@@ -123,7 +130,7 @@ function PostDetailPage() {
     return () => {
       mounted = false
     }
-  }, [postId, mockPost])
+  }, [postId, mockPost, detailImageSource])
 
   const handleLike = () => {
     setLikesAmount((prev) => prev + 1)
@@ -172,6 +179,8 @@ function PostDetailPage() {
   }
 
   const dateString = post?.date
+  const heroImage = getPostHeroImage(post, detailImageSource)
+  const heroImagePosition = getPostHeroImagePosition(post, detailImageSource)
   const author = {
     name: post?.author,
     profilePic: post?.authorAvatar,
@@ -185,12 +194,15 @@ function PostDetailPage() {
       <main className="flex-grow">
         <div className="max-w-7xl mx-auto space-y-8 container md:px-8 pb-20 md:pb-28 md:pt-8 lg:pt-16">
           <div className="space-y-4 md:px-4">
-            {post?.image && (
-              <img
-                src={post.image}
-                alt={post.title}
-                className="md:rounded-lg object-cover w-full h-[260px] sm:h-[340px] md:h-[587px]"
-              />
+            {heroImage && (
+              <div className="overflow-hidden md:rounded-lg w-full h-[260px] sm:h-[340px] md:h-[587px]">
+                <img
+                  src={heroImage}
+                  alt={post.title}
+                  className="w-full h-full object-cover"
+                  style={{ objectPosition: heroImagePosition }}
+                />
+              </div>
             )}
           </div>
 
