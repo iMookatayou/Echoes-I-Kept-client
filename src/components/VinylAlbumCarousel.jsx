@@ -52,7 +52,7 @@ function VinylAlbumCarousel({ tracks }) {
           type="button"
           onClick={selectNextTrack}
           aria-label={`Show next song. Currently showing ${activeTrack.bestPick} by ${activeTrack.artist}`}
-          className="group absolute left-0 top-1/2 z-10 aspect-square w-[72%] -translate-y-1/2 overflow-hidden rounded-[4px] bg-neutral-100 text-left shadow-[0_14px_30px_rgba(0,0,0,0.22)] outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-4"
+          className="group absolute left-0 top-1/2 z-10 aspect-square w-[68%] -translate-y-1/2 overflow-hidden rounded-[4px] bg-neutral-100 text-left shadow-[0_14px_30px_rgba(0,0,0,0.22)] outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-4"
         >
           {previousTrack && (
             <img
