@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { ArrowUpRight } from 'lucide-react'
 
 const COVER_TRANSITION_MS = 360
 
@@ -71,7 +72,7 @@ function VinylAlbumCarousel({ tracks }) {
         </button>
       </div>
 
-      <div className="mt-4 min-h-[72px] text-center" aria-live="polite">
+      <div className="mt-4 min-h-[104px] text-center" aria-live="polite">
         <p className="text-xs font-medium uppercase text-muted-foreground">
           {activeTrack.artist}
         </p>
@@ -79,7 +80,18 @@ function VinylAlbumCarousel({ tracks }) {
           {activeTrack.bestPick}
         </p>
 
-        <div className="mt-2 flex items-center justify-center" aria-label="Choose a song">
+        <a
+          href={activeTrack.spotifyUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-1.5 inline-flex items-center gap-1 text-xs font-medium text-muted-foreground underline decoration-neutral-300 underline-offset-4 transition-colors duration-200 hover:text-foreground focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-2"
+          aria-label={`Listen to ${activeTrack.bestPick} by ${activeTrack.artist} on Spotify`}
+        >
+          Listen on Spotify
+          <ArrowUpRight className="h-3.5 w-3.5" aria-hidden="true" />
+        </a>
+
+        <div className="mt-1 flex items-center justify-center" aria-label="Choose a song">
           {tracks.map((track, index) => {
             const isActive = index === activeIndex
 
