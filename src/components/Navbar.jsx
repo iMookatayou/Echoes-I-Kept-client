@@ -1,232 +1,289 @@
-import { useState, useRef, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import {
   ChevronDown,
-  LayoutDashboard,
+  LayoutGrid,
   LogOut,
   Menu,
   User,
   KeyRound,
   X,
-} from 'lucide-react'
-import { useAuth } from '../context/AuthContext'
+} from "lucide-react";
+import { useAuth } from "../context/useAuth";
+import NotificationBell from "./NotificationBell";
 
 function Navbar() {
-  const navigate = useNavigate()
-  const { isAuthenticated, state, logout } = useAuth()
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [dropdownOpen, setDropdownOpen] = useState(false)
-  const dropdownRef = useRef(null)
+  const navigate = useNavigate();
+  const { isAuthenticated, state, logout } = useAuth();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     function handleClickOutside(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setDropdownOpen(false)
+        setDropdownOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    function handleScroll() {
+      setScrolled(window.scrollY > 10);
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   const handleLogout = () => {
-    setDropdownOpen(false)
-    setMobileMenuOpen(false)
-    logout()
-  }
+    setDropdownOpen(false);
+    setMobileMenuOpen(false);
+    logout();
+  };
 
   const profilePath =
-    state.user?.role === 'admin' ? '/admin/profile' : '/profile'
+    state.user?.role === "admin" ? "/admin/profile" : "/profile";
   const resetPasswordPath =
-    state.user?.role === 'admin' ? '/admin/reset-password' : '/reset-password'
+    state.user?.role === "admin" ? "/admin/reset-password" : "/reset-password";
 
   return (
-    <nav className="relative flex items-center justify-between py-4 px-4 md:px-8 bg-background border-b border-muted">
-      <Link to="/" className="text-2xl font-bold">
-        Thomson P<span className="text-green-400">.</span>
-      </Link>
-
-      {state.getUserLoading ? (
-        <div className="hidden sm:flex items-center">
-          <div className="h-12 w-12 rounded-full bg-[#EFEEEB] animate-pulse" />
-          <div className="ml-3 h-6 w-32 bg-[#EFEEEB] animate-pulse rounded" />
-        </div>
-      ) : isAuthenticated ? (
-        <div className="hidden sm:flex items-center space-x-4" ref={dropdownRef}>
-          <button
-            type="button"
-            onClick={() => setDropdownOpen((open) => !open)}
-            className="flex items-center space-x-2 rounded-md text-sm font-medium text-foreground hover:text-muted-foreground focus:outline-none"
-          >
-            <img
-              src={state.user.profilePic}
-              alt="Profile"
-              className="h-12 w-12 rounded-full object-cover"
-            />
-            <span>{state.user.name}</span>
-            <ChevronDown className="h-4 w-4" />
-          </button>
-
-          {dropdownOpen && (
-            <div className="absolute right-4 md:right-8 top-16 w-56 bg-background rounded-sm shadow-sm border border-muted p-1 z-50">
-              <button
-                type="button"
-                onClick={() => {
-                  setDropdownOpen(false)
-                  navigate(profilePath)
-                }}
-                className="w-full flex items-center px-3 py-2 text-sm text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground hover:rounded-sm cursor-pointer"
-              >
-                <User className="mr-2 h-4 w-4" />
-                Profile
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setDropdownOpen(false)
-                  navigate(resetPasswordPath)
-                }}
-                className="w-full flex items-center px-3 py-2 text-sm text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground hover:rounded-sm cursor-pointer"
-              >
-                <KeyRound className="mr-2 h-4 w-4" />
-                Reset password
-              </button>
-              {state.user.role === 'admin' && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setDropdownOpen(false)
-                    navigate('/admin/article-management')
-                  }}
-                  className="w-full flex items-center px-3 py-2 text-sm text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground hover:rounded-sm cursor-pointer"
-                >
-                  <LayoutDashboard className="mr-2 h-4 w-4" />
-                  Admin panel
-                </button>
-              )}
-              <div className="border-t border-muted m-1" />
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="w-full flex items-center px-3 py-2 text-sm text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground hover:rounded-sm cursor-pointer"
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                Log out
-              </button>
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className="hidden sm:flex space-x-4">
-          <Link
-            to="/login"
-            className="px-8 py-2 rounded-full text-foreground border border-foreground hover:border-muted-foreground hover:text-muted-foreground transition-colors"
-          >
-            Log in
-          </Link>
-          <Link
-            to="/sign-up"
-            className="px-8 py-2 bg-foreground text-white rounded-full hover:bg-muted-foreground transition-colors"
-          >
-            Sign up
-          </Link>
-        </div>
-      )}
-
-      <button
-        type="button"
-        className="sm:hidden focus:outline-none"
-        onClick={() => setMobileMenuOpen((open) => !open)}
-        aria-label="Toggle menu"
+    <div
+      className={`sticky top-0 z-50 transition-[padding] duration-700 ease-in-out
+        ${scrolled ? "px-4 md:px-[14%] lg:px-[18%] pt-3 pb-0" : "px-0 pt-0 pb-0"}`}
+    >
+      <nav
+        className={`relative flex items-center justify-between w-full py-6 px-6 md:px-12 transition-all duration-700 ease-in-out
+          ${
+            scrolled
+              ? "rounded-2xl bg-[#EFEEEB]/95 backdrop-blur-md shadow-md border border-[#D9D8D4]"
+              : "bg-[#EFEEEB] border-b border-[#D9D8D4]"
+          }`}
       >
-        {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-      </button>
+        <Link to="/" className="flex items-center gap-3 group">
+          <img
+            src="/svg/listening-to-music.svg"
+            alt=""
+            className="h-12 w-12 opacity-70 group-hover:opacity-100 transition-opacity duration-300"
+          />
+          <div className="flex flex-col leading-tight">
+            <span className="font-medium text-2xl md:text-3xl font-bold tracking-tight border-b-2 border-foreground pb-0.5 block">
+              Echoes I Kept
+            </span>
+            <span className="text-[10px] font-medium tracking-[0.2em] uppercase text-right block mt-0.5">
+              Blog
+            </span>
+          </div>
+        </Link>
 
-      {mobileMenuOpen && (
-        <div className="sm:hidden absolute top-full left-0 w-screen bg-background border-b border-muted flex flex-col gap-6 py-6 px-6 z-50">
-          {state.getUserLoading ? (
-            <div className="flex items-center">
-              <div className="h-16 w-16 rounded-full bg-[#EFEEEB] animate-pulse" />
-              <div className="ml-3 h-6 w-32 bg-[#EFEEEB] animate-pulse rounded" />
-            </div>
-          ) : isAuthenticated ? (
-            <div className="space-y-2">
-              <div className="flex items-center py-2">
+        {state.getUserLoading ? (
+          <div className="hidden sm:flex items-center">
+            <div className="h-9 w-9 rounded-full bg-[#D9D8D4] animate-pulse" />
+            <div className="ml-3 h-4 w-24 bg-[#D9D8D4] animate-pulse rounded" />
+          </div>
+        ) : isAuthenticated ? (
+          <div className="hidden items-center gap-4 sm:flex">
+            <NotificationBell />
+            <div className="relative shrink-0" ref={dropdownRef}>
+              <button
+                type="button"
+                onClick={() => setDropdownOpen((open) => !open)}
+                className="inline-flex h-10 max-w-64 items-center justify-end gap-2 whitespace-nowrap rounded-md text-sm font-medium text-foreground hover:text-muted-foreground focus:outline-none transition-colors"
+                aria-expanded={dropdownOpen}
+                aria-haspopup="menu"
+              >
                 <img
                   src={state.user.profilePic}
                   alt="Profile"
-                  className="h-16 w-16 rounded-full object-cover"
+                  className="h-10 w-10 shrink-0 rounded-full object-cover ring-2 ring-[#D9D8D4]"
                 />
-                <span className="ml-3 text-base font-medium text-foreground">
+                <span className="min-w-0 max-w-40 truncate">
                   {state.user.name}
                 </span>
+                <ChevronDown
+                  className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`}
+                />
+              </button>
+
+              {dropdownOpen && (
+                <div
+                  className="absolute right-0 top-full z-50 mt-2 w-56 rounded-md border border-[#D9D8D4] bg-white p-1.5 shadow-md"
+                  role="menu"
+                >
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      navigate(profilePath);
+                    }}
+                    className="flex w-full cursor-pointer items-center px-3 py-2 text-sm text-foreground rounded-sm hover:bg-[#EFEEEB] hover:text-muted-foreground transition-colors"
+                    role="menuitem"
+                  >
+                    <User className="mr-2 h-4 w-4 opacity-60" />
+                    Profile
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      navigate(resetPasswordPath);
+                    }}
+                    className="flex w-full cursor-pointer items-center px-3 py-2 text-sm text-foreground rounded-sm hover:bg-[#EFEEEB] hover:text-muted-foreground transition-colors"
+                    role="menuitem"
+                  >
+                    <KeyRound className="mr-2 h-4 w-4 opacity-60" />
+                    Reset password
+                  </button>
+                  {state.user.role === "admin" && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        navigate("/admin/article-management");
+                      }}
+                      className="flex w-full cursor-pointer items-center px-3 py-2 text-sm text-foreground rounded-sm hover:bg-[#EFEEEB] hover:text-muted-foreground transition-colors"
+                      role="menuitem"
+                    >
+                      <LayoutGrid className="mr-2 h-4 w-4 opacity-60" />
+                      Admin panel
+                    </button>
+                  )}
+                  <div className="my-1 border-t border-[#EFEEEB]" />
+                  <button
+                    type="button"
+                    onClick={handleLogout}
+                    className="flex w-full cursor-pointer items-center px-3 py-2 text-sm text-foreground rounded-sm hover:bg-[#EFEEEB] hover:text-muted-foreground transition-colors"
+                    role="menuitem"
+                  >
+                    <LogOut className="mr-2 h-4 w-4 opacity-60" />
+                    Log out
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="hidden sm:flex items-center gap-3">
+            <Link
+              to="/login"
+              className="px-6 py-2 rounded-full text-sm font-medium text-foreground border border-foreground/40 hover:border-foreground transition-colors"
+            >
+              Log in
+            </Link>
+            <Link
+              to="/sign-up"
+              className="px-6 py-2 bg-foreground text-white text-sm font-medium rounded-full hover:bg-foreground/80 transition-colors"
+            >
+              Sign up
+            </Link>
+          </div>
+        )}
+
+        <button
+          type="button"
+          className="sm:hidden focus:outline-none text-foreground"
+          onClick={() => setMobileMenuOpen((open) => !open)}
+          aria-label="Toggle menu"
+        >
+          {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
+
+        {mobileMenuOpen && (
+          <div
+            className={`sm:hidden absolute top-full left-0 w-full bg-[#EFEEEB]/95 backdrop-blur-md border border-t-0 border-[#D9D8D4] flex flex-col gap-5 py-6 px-6 z-50 shadow-md
+            ${scrolled ? "rounded-b-2xl" : ""}`}
+          >
+            {state.getUserLoading ? (
+              <div className="flex items-center">
+                <div className="h-12 w-12 rounded-full bg-[#D9D8D4] animate-pulse" />
+                <div className="ml-3 h-5 w-28 bg-[#D9D8D4] animate-pulse rounded" />
               </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileMenuOpen(false)
-                  navigate(profilePath)
-                }}
-                className="flex items-center w-full px-4 py-2 text-base font-medium text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground rounded-sm"
-              >
-                <User className="mr-4 h-5 w-5" />
-                Profile
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileMenuOpen(false)
-                  navigate(resetPasswordPath)
-                }}
-                className="flex items-center w-full px-4 py-2 text-base font-medium text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground rounded-sm"
-              >
-                <KeyRound className="mr-4 h-5 w-5" />
-                Reset password
-              </button>
-              {state.user.role === 'admin' && (
+            ) : isAuthenticated ? (
+              <div className="space-y-1">
+                <div className="flex items-center py-2 mb-2">
+                  <img
+                    src={state.user.profilePic}
+                    alt="Profile"
+                    className="h-12 w-12 rounded-full object-cover ring-2 ring-[#D9D8D4]"
+                  />
+                  <span className="ml-3 text-base font-medium text-foreground">
+                    {state.user.name}
+                  </span>
+                </div>
+                <NotificationBell
+                  compact
+                  onNavigate={() => setMobileMenuOpen(false)}
+                />
                 <button
                   type="button"
                   onClick={() => {
-                    setMobileMenuOpen(false)
-                    navigate('/admin/article-management')
+                    setMobileMenuOpen(false);
+                    navigate(profilePath);
                   }}
-                  className="flex items-center w-full px-4 py-2 text-base font-medium text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground rounded-sm"
+                  className="flex items-center w-full px-4 py-2.5 text-sm font-medium text-foreground hover:bg-[#E2E1DD] rounded-md transition-colors"
                 >
-                  <LayoutDashboard className="mr-4 h-5 w-5" />
-                  Admin panel
+                  <User className="mr-3 h-4 w-4 opacity-60" />
+                  Profile
                 </button>
-              )}
-              <div className="border-t border-muted" />
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="flex items-center w-full px-4 py-2 text-base font-medium text-foreground hover:bg-[#EFEEEB] hover:text-muted-foreground rounded-sm"
-              >
-                <LogOut className="mr-4 h-5 w-5" />
-                Log out
-              </button>
-            </div>
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="px-8 py-4 rounded-full text-foreground border border-foreground hover:border-muted-foreground hover:text-muted-foreground transition-colors text-center"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Log in
-              </Link>
-              <Link
-                to="/sign-up"
-                className="px-8 py-4 bg-foreground text-white rounded-full hover:bg-muted-foreground transition-colors text-center"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                Sign up
-              </Link>
-            </>
-          )}
-        </div>
-      )}
-    </nav>
-  )
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    navigate(resetPasswordPath);
+                  }}
+                  className="flex items-center w-full px-4 py-2.5 text-sm font-medium text-foreground hover:bg-[#E2E1DD] rounded-md transition-colors"
+                >
+                  <KeyRound className="mr-3 h-4 w-4 opacity-60" />
+                  Reset password
+                </button>
+                {state.user.role === "admin" && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      navigate("/admin/article-management");
+                    }}
+                    className="flex items-center w-full px-4 py-2.5 text-sm font-medium text-foreground hover:bg-[#E2E1DD] rounded-md transition-colors"
+                  >
+                    <LayoutGrid className="mr-3 h-4 w-4 opacity-60" />
+                    Admin panel
+                  </button>
+                )}
+                <div className="border-t border-[#D9D8D4] pt-1 mt-1" />
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex items-center w-full px-4 py-2.5 text-sm font-medium text-foreground hover:bg-[#E2E1DD] rounded-md transition-colors"
+                >
+                  <LogOut className="mr-3 h-4 w-4 opacity-60" />
+                  Log out
+                </button>
+              </div>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="px-8 py-3.5 rounded-full text-sm font-medium text-foreground border border-foreground/40 hover:border-foreground transition-colors text-center"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Log in
+                </Link>
+                <Link
+                  to="/sign-up"
+                  className="px-8 py-3.5 bg-foreground text-white text-sm font-medium rounded-full hover:bg-foreground/80 transition-colors text-center"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Sign up
+                </Link>
+              </>
+            )}
+          </div>
+        )}
+      </nav>
+    </div>
+  );
 }
 
-export default Navbar
+export default Navbar;

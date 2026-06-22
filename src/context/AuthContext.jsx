@@ -1,53 +1,30 @@
-import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import AuthContext from './AuthContextCore'
 import * as authService from '../services/authService'
-
-const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate()
   const [state, setState] = useState({
-    user: null,
+    user: authService.getStoredUser(),
     loading: false,
     error: null,
-    getUserLoading: true,
+    getUserLoading: false,
   })
-
-  const fetchUser = useCallback(async () => {
-    if (!authService.getStoredToken()) {
-      setState((prev) => ({ ...prev, user: null, getUserLoading: false }))
-      return
-    }
-
-    try {
-      setState((prev) => ({ ...prev, getUserLoading: true }))
-      const user = await authService.getUser()
-      setState((prev) => ({ ...prev, user, getUserLoading: false, error: null }))
-    } catch {
-      authService.logout()
-      setState((prev) => ({
-        ...prev,
-        user: null,
-        getUserLoading: false,
-        error: null,
-      }))
-    }
-  }, [])
-
-  useEffect(() => {
-    fetchUser()
-  }, [fetchUser])
 
   const login = async (credentials) => {
     try {
       setState((prev) => ({ ...prev, loading: true, error: null }))
-      await authService.login(credentials)
-      setState((prev) => ({ ...prev, loading: false, error: null }))
-      await fetchUser()
-      return null
+      const result = await authService.login(credentials)
+      setState((prev) => ({
+        ...prev,
+        user: result.user,
+        loading: false,
+        error: null,
+      }))
+      return { user: result.user }
     } catch (err) {
-      const message =
-        err.response?.data?.error || 'Login failed'
+      const message = err.response?.data?.error || 'Login failed'
       setState((prev) => ({ ...prev, loading: false, error: message }))
       return { error: message }
     }
@@ -56,13 +33,42 @@ export function AuthProvider({ children }) {
   const signup = async (data) => {
     try {
       setState((prev) => ({ ...prev, loading: true, error: null }))
-      await authService.signup(data)
-      setState((prev) => ({ ...prev, loading: false, error: null }))
-      await fetchUser()
+      const result = await authService.signup(data)
+      setState((prev) => ({
+        ...prev,
+        user: result.user,
+        loading: false,
+        error: null,
+      }))
       return null
     } catch (err) {
-      const message =
-        err.response?.data?.error || 'Sign up failed'
+      const message = err.response?.data?.error || 'Sign up failed'
+      setState((prev) => ({ ...prev, loading: false, error: message }))
+      return { error: message }
+    }
+  }
+
+  const updateProfile = async (profile) => {
+    try {
+      setState((prev) => ({ ...prev, loading: true, error: null }))
+      const user = await authService.updateProfile(profile)
+      setState((prev) => ({ ...prev, user, loading: false, error: null }))
+      return null
+    } catch (err) {
+      const message = err.response?.data?.error || 'Update profile failed'
+      setState((prev) => ({ ...prev, loading: false, error: message }))
+      return { error: message }
+    }
+  }
+
+  const resetPassword = async (passwords) => {
+    try {
+      setState((prev) => ({ ...prev, loading: true, error: null }))
+      await authService.resetPassword(passwords)
+      setState((prev) => ({ ...prev, loading: false, error: null }))
+      return null
+    } catch (err) {
+      const message = err.response?.data?.error || 'Reset password failed'
       setState((prev) => ({ ...prev, loading: false, error: message }))
       return { error: message }
     }
@@ -78,17 +84,17 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ state, login, signup, logout, fetchUser, isAuthenticated }}
+      value={{
+        state,
+        login,
+        signup,
+        updateProfile,
+        resetPassword,
+        logout,
+        isAuthenticated,
+      }}
     >
       {children}
     </AuthContext.Provider>
   )
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext)
-  if (!context) {
-    throw new Error('useAuth must be used within AuthProvider')
-  }
-  return context
 }
