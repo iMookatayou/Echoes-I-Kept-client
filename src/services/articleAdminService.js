@@ -8,8 +8,22 @@ const LEGACY_SEED_TITLES = new Set([
   'The Fascinating World of Cats: Why We Love Them',
 ])
 
+const LEGACY_ARTIST_TAB_NAMES = new Set([
+  'Billie Eilish',
+  'Charlie Puth',
+  'The Neighbourhood',
+  'Taylor Swift',
+  'Katy Perry',
+  'The Weeknd',
+])
+
 function isLegacySeed(articles) {
-  return articles.some((article) => LEGACY_SEED_TITLES.has(article.title))
+  return articles.some(
+    (article) =>
+      LEGACY_SEED_TITLES.has(article.title) ||
+      article.category === 'Cat' ||
+      LEGACY_ARTIST_TAB_NAMES.has(article.category),
+  )
 }
 
 function toAdminArticle(post) {
@@ -27,6 +41,8 @@ function mergeDetailImagesFromMock(articles) {
 
     return {
       ...article,
+      artist: mock.artist || article.artist,
+      category: mock.category || article.category,
       image: mock.image,
       detailImage: mock.detailImage,
       detailImagePosition:
@@ -105,7 +121,9 @@ export function searchPublishedAdminArticles(keyword) {
     (article) =>
       article.title.toLowerCase().includes(lower) ||
       article.description.toLowerCase().includes(lower) ||
-      article.category.toLowerCase().includes(lower) ||
+      article.category?.toLowerCase().includes(lower) ||
+      article.artist?.toLowerCase().includes(lower) ||
+      article.bestPick?.toLowerCase().includes(lower) ||
       article.author?.toLowerCase().includes(lower),
   )
 }

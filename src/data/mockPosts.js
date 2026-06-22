@@ -232,6 +232,8 @@ export function searchMockPosts(keyword) {
       post.title.toLowerCase().includes(lower) ||
       post.description.toLowerCase().includes(lower) ||
       post.category.toLowerCase().includes(lower) ||
+      post.artist.toLowerCase().includes(lower) ||
+      post.bestPick?.toLowerCase().includes(lower) ||
       post.author?.toLowerCase().includes(lower),
   );
 }

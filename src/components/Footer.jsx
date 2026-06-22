@@ -1,43 +1,50 @@
-import { Link } from 'react-router-dom'
-import BrandIcon from './BrandIcon'
+import BrandIcon from "./BrandIcon";
 
 function Footer() {
   return (
-    <footer className="bg-[#EFEEEB] px-8 py-8 md:py-14 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-      <div className="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6">
-        <span className="font-medium">Get in touch</span>
-        <div className="flex items-center gap-4 text-[#4A4945]">
-          <a href="#" className="transition-colors hover:text-muted-foreground">
+    <footer className="bg-[#EFEEEB] border-t border-[#D9D8D4] px-8 py-10 md:py-14">
+      <div className="flex flex-col items-center gap-4">
+        <span className="text-sm tracking-widest uppercase text-[#4A4945]">
+          Get in touch
+        </span>
+        <div className="flex items-center gap-5">
+          <a
+            href="https://www.linkedin.com/in/techin-jetsribumrung-9a4069364/"
+            className="text-[#4A4945] transition-opacity hover:opacity-50"
+            aria-label="LinkedIn"
+          >
             <BrandIcon
               src="/figma-assets/LinkedIN_black.svg"
-              className="h-6 w-6"
+              className="h-10 w-10"
             />
-            <span className="sr-only">LinkedIn</span>
           </a>
-          <a href="#" className="transition-colors hover:text-muted-foreground">
+          <a
+            href="https://github.com/iMookatayou"
+            className="text-[#4A4945] transition-opacity hover:opacity-50"
+            aria-label="GitHub"
+          >
             <BrandIcon
               src="/figma-assets/Github_black.svg"
-              className="h-6 w-6"
+              className="h-10 w-10"
             />
-            <span className="sr-only">GitHub</span>
           </a>
-          <a href="#" className="transition-colors hover:text-muted-foreground">
+          <a
+            href="mailto:jetsribumrungtechin@gmail.com"
+            className="text-[#4A4945] transition-opacity hover:opacity-50"
+            aria-label="Email"
+          >
             <BrandIcon
               src="/figma-assets/Google_black.svg"
-              className="h-6 w-6"
+              className="h-10 w-10"
             />
-            <span className="sr-only">Google</span>
           </a>
         </div>
+        <p className="text-sm text-[#4A4945] tracking-wide mt-2">
+          © {new Date().getFullYear()} Techin B. All rights reserved
+        </p>
       </div>
-      <Link
-        to="/"
-        className="hover:text-muted-foreground font-medium underline"
-      >
-        Home page
-      </Link>
     </footer>
-  )
+  );
 }
 
-export default Footer
+export default Footer;

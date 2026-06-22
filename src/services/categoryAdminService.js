@@ -23,10 +23,26 @@ function normalizeName(name) {
   return name.trim()
 }
 
+const MUSIC_GENRES = new Set(['Pop', 'Alternative', 'R&B'])
+
+const LEGACY_ARTIST_TAB_NAMES = new Set([
+  'Billie Eilish',
+  'Charlie Puth',
+  'The Neighbourhood',
+  'Taylor Swift',
+  'Katy Perry',
+  'The Weeknd',
+])
+
 function isLegacySeed(categories) {
   return (
     Array.isArray(categories) &&
-    categories.some((category) => category.name === 'Cat')
+    categories.some(
+      (category) =>
+        category.name === 'Cat' ||
+        LEGACY_ARTIST_TAB_NAMES.has(category.name) ||
+        !MUSIC_GENRES.has(category.name),
+    )
   )
 }
 
