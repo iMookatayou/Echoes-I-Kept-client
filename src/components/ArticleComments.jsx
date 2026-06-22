@@ -75,6 +75,7 @@ function ArticleComments({ comments = [], onAddComment }) {
                   <img
                     src={comment.profile_pic || '/author-image.jpeg'}
                     alt={comment.name || 'Comment author'}
+                    draggable={false}
                     className="rounded-full w-12 h-12 object-cover"
                   />
                 </div>

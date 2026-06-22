@@ -10,3 +10,13 @@ export function getCategoryTagStyles(category) {
     'bg-[#EFEEEB] text-[#4A4742] ring-[#DCD9D4]'
   )
 }
+
+const categoryTextStyles = {
+  Pop: 'text-[#754555]',
+  Alternative: 'text-[#40574F]',
+  'R&B': 'text-[#584A66]',
+}
+
+export function getCategoryTextStyles(category) {
+  return categoryTextStyles[category] || 'text-muted-foreground'
+}

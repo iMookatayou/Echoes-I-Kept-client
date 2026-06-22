@@ -101,7 +101,12 @@ body {
 
 .vinyl-record {
   background:
-    radial-gradient(circle at center, transparent 0 19%, rgb(7 7 7) 19.5% 21%, transparent 21.5%),
+    radial-gradient(
+      circle at center,
+      transparent 0 19%,
+      rgb(7 7 7) 19.5% 21%,
+      transparent 21.5%
+    ),
     repeating-radial-gradient(circle at center, #191919 0 2px, #0c0c0c 3px 5px);
 }
 
@@ -118,4 +123,11 @@ body {
   .album-cover-in {
     animation: none;
   }
+}
+
+.no-image-drag img {
+  -webkit-user-drag: none;
+  user-drag: none;
+  -webkit-user-select: none;
+  user-select: none;
 }

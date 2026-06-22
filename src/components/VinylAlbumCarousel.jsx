@@ -54,7 +54,7 @@ function VinylAlbumCarousel({ tracks }) {
           type="button"
           onClick={selectNextTrack}
           aria-label={`Show next song. Currently showing ${activeTrack.bestPick} by ${activeTrack.artist}`}
-          className="group absolute -left-[4%] top-1/2 z-10 aspect-square w-[72%] -translate-y-1/2 overflow-hidden rounded-[4px] bg-black text-left shadow-[0_14px_30px_rgba(0,0,0,0.22)] outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-4"
+          className="group absolute -left-[4%] top-1/2 z-10 aspect-square w-[72%] -translate-y-1/2 overflow-hidden rounded-[4px] text-left shadow-[0_14px_30px_rgba(0,0,0,0.22)] outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-4"
         >
           {previousTrack && (
             <img
@@ -62,7 +62,7 @@ function VinylAlbumCarousel({ tracks }) {
               alt=""
               aria-hidden="true"
               draggable={false}
-              className="pointer-events-none absolute inset-0 z-10 h-full w-full select-none object-cover"
+              className="pointer-events-none absolute inset-0 z-10 h-full w-full scale-[1.02] select-none object-cover"
             />
           )}
           <img
@@ -70,7 +70,7 @@ function VinylAlbumCarousel({ tracks }) {
             src={activeTrack.image}
             alt={`${activeTrack.artist} album artwork for ${activeTrack.bestPick}`}
             draggable={false}
-            className="album-cover-in pointer-events-none absolute inset-0 z-20 h-full w-full select-none object-cover transition-transform duration-300 group-hover:scale-[1.015] motion-reduce:transition-none"
+            className="album-cover-in pointer-events-none absolute inset-0 z-20 h-full w-full scale-[1.02] select-none object-cover transition-transform duration-300 group-hover:scale-[1.035] motion-reduce:transition-none"
           />
         </button>
       </div>

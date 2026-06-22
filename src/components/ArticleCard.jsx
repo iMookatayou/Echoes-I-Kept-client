@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom'
-import { getCategoryTagStyles } from '../utils/categoryStyles'
+import { Link } from "react-router-dom";
+import { getCategoryTagStyles } from "../utils/categoryStyles";
 
 function ArticleCard({
   id,
@@ -8,10 +8,10 @@ function ArticleCard({
   title,
   description,
   author,
-  authorAvatar = '/avatars/anime.jpg',
+  authorAvatar = "/avatars/anime.jpg",
   date,
 }) {
-  const postPath = `/post/${id}`
+  const postPath = `/post/${id}`;
 
   return (
     <article className="flex flex-col gap-4">
@@ -25,40 +25,41 @@ function ArticleCard({
           alt={title}
           loading="lazy"
         />
+        {category && (
+          <span
+            className={`absolute top-0 right-0 rounded-bl-lg px-3 py-1.5 text-xs font-semibold uppercase tracking-wide shadow-md ring-1 ring-inset ${getCategoryTagStyles(category)}`}
+          >
+            {category}
+          </span>
+        )}
       </Link>
 
       <div className="flex flex-col gap-2">
-        <span
-          className={`inline-flex w-fit rounded-full px-3 py-1 text-sm font-semibold ring-1 ring-inset ${getCategoryTagStyles(category)}`}
-        >
-          {category}
-        </span>
-
         <Link to={postPath} className="group">
-          <h2 className="text-start text-xl font-bold leading-snug line-clamp-2 group-hover:underline">
+          <h2 className="font-display text-start text-xl font-medium leading-snug line-clamp-2 group-hover:underline">
             {title}
           </h2>
         </Link>
 
-        <p className="text-sm leading-relaxed text-muted-foreground line-clamp-3">
+        <p className="text-[15px] leading-[1.55] text-muted-foreground line-clamp-3">
           {description}
         </p>
 
-        <div className="flex items-center gap-2 pt-1 text-sm text-muted-foreground">
+        <div className="flex items-center gap-2 pt-1 text-[13px] font-medium text-muted-foreground">
           <img
             className="h-8 w-8 rounded-full object-cover"
             src={authorAvatar}
-            alt={author || 'Author'}
+            alt={author || "Author"}
           />
-          <span className="text-foreground">{author || 'Unknown author'}</span>
-          <span className="text-gray-300" aria-hidden="true">
+          <span className="text-foreground">{author || "Unknown author"}</span>
+          <span className="text-border" aria-hidden="true">
             |
           </span>
           {date && <time dateTime={date}>{date}</time>}
         </div>
       </div>
     </article>
-  )
+  );
 }
 
-export default ArticleCard
+export default ArticleCard;
