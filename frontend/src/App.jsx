@@ -5,9 +5,8 @@ import AdminRoute from "./components/AdminRoute";
 import GuestRoute from "./components/GuestRoute";
 import ProtectedRoute from "./components/ProtectedRoute";
 import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
 import AdminLoginPage from "./pages/admin/AdminLoginPage";
-import SignUpPage from "./pages/SignUpPage";
+import AuthPage from "./pages/AuthPage";
 import PostDetailPage from "./pages/PostDetailPage";
 import AdminArticleManagementPage from "./pages/AdminArticleManagementPage";
 import AdminCategoryManagementPage from "./pages/AdminCategoryManagementPage";
@@ -96,7 +95,7 @@ function App() {
             path="/login"
             element={
               <GuestRoute>
-                <LoginPage />
+                <AuthPage />
               </GuestRoute>
             }
           />
@@ -104,7 +103,15 @@ function App() {
             path="/sign-up"
             element={
               <GuestRoute>
-                <SignUpPage />
+                <AuthPage />
+              </GuestRoute>
+            }
+          />
+          <Route
+            path="/forgot-password"
+            element={
+              <GuestRoute>
+                <AuthPage />
               </GuestRoute>
             }
           />
