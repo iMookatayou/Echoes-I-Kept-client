@@ -3,9 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import {
   ChevronDown,
   LayoutGrid,
+  LogIn,
   LogOut,
   Menu,
   User,
+  UserPlus,
+  UserRound,
   KeyRound,
   X,
 } from "lucide-react";
@@ -165,19 +168,43 @@ function Navbar() {
             </div>
           </div>
         ) : (
-          <div className="hidden sm:flex items-center gap-3">
-            <Link
-              to="/login"
-              className="px-6 py-2 rounded-full text-sm font-medium text-foreground border border-foreground/40 hover:border-foreground transition-colors"
+          <div className="relative hidden shrink-0 sm:block" ref={dropdownRef}>
+            <button
+              type="button"
+              onClick={() => setDropdownOpen((open) => !open)}
+              className="grid h-11 w-11 place-items-center rounded-full border border-foreground/20 bg-white text-foreground transition-colors hover:border-foreground/50 hover:bg-[#E7E5E0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
+              aria-label="Open account menu"
+              aria-expanded={dropdownOpen}
+              aria-haspopup="menu"
             >
-              Log in
-            </Link>
-            <Link
-              to="/sign-up"
-              className="px-6 py-2 bg-foreground text-white text-sm font-medium rounded-full hover:bg-foreground/80 transition-colors"
-            >
-              Sign up
-            </Link>
+              <UserRound className="h-5 w-5" strokeWidth={1.7} />
+            </button>
+
+            {dropdownOpen && (
+              <div
+                className="absolute right-0 top-full z-50 mt-3 w-52 rounded-[4px] border border-[#D9D8D4] bg-white p-1.5 shadow-[0_16px_40px_rgba(20,20,20,0.12)]"
+                role="menu"
+              >
+                <Link
+                  to="/login"
+                  onClick={() => setDropdownOpen(false)}
+                  className="flex w-full items-center rounded-sm px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-[#EFEEEB]"
+                  role="menuitem"
+                >
+                  <LogIn className="mr-3 h-4 w-4 opacity-60" />
+                  Log in
+                </Link>
+                <Link
+                  to="/sign-up"
+                  onClick={() => setDropdownOpen(false)}
+                  className="flex w-full items-center rounded-sm px-3 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-[#EFEEEB]"
+                  role="menuitem"
+                >
+                  <UserPlus className="mr-3 h-4 w-4 opacity-60" />
+                  Create account
+                </Link>
+              </div>
+            )}
           </div>
         )}
 
@@ -262,22 +289,32 @@ function Navbar() {
                 </button>
               </div>
             ) : (
-              <>
+              <div className="space-y-1">
+                <div className="mb-3 flex items-center border-b border-[#D9D8D4] px-2 pb-4">
+                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-foreground/20 bg-white text-foreground">
+                    <UserRound className="h-5 w-5" strokeWidth={1.7} />
+                  </span>
+                  <span className="ml-3 text-sm font-semibold text-foreground">
+                    Guest account
+                  </span>
+                </div>
                 <Link
                   to="/login"
-                  className="px-8 py-3.5 rounded-full text-sm font-medium text-foreground border border-foreground/40 hover:border-foreground transition-colors text-center"
+                  className="flex items-center rounded-sm px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-[#E2E1DD]"
                   onClick={() => setMobileMenuOpen(false)}
                 >
+                  <LogIn className="mr-3 h-4 w-4 opacity-60" />
                   Log in
                 </Link>
                 <Link
                   to="/sign-up"
-                  className="px-8 py-3.5 bg-foreground text-white text-sm font-medium rounded-full hover:bg-foreground/80 transition-colors text-center"
+                  className="flex items-center rounded-sm px-4 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-[#E2E1DD]"
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  Sign up
+                  <UserPlus className="mr-3 h-4 w-4 opacity-60" />
+                  Create account
                 </Link>
-              </>
+              </div>
             )}
           </div>
         )}
