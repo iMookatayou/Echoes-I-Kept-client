@@ -6,7 +6,9 @@ const COVER_TRANSITION_MS = 360
 function VinylAlbumCarousel({ tracks }) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [previousTrack, setPreviousTrack] = useState(null)
+  const [loadedCoverImage, setLoadedCoverImage] = useState(null)
   const activeTrack = tracks[activeIndex]
+  const coverLoaded = loadedCoverImage === activeTrack.image
 
   useEffect(() => {
     if (!previousTrack) return undefined
@@ -43,7 +45,9 @@ function VinylAlbumCarousel({ tracks }) {
                 src={activeTrack.image}
                 alt=""
                 draggable={false}
-                className="pointer-events-none h-full w-full select-none object-cover"
+                className={`pointer-events-none h-full w-full select-none object-cover transition-opacity duration-300 ${
+                  coverLoaded ? 'opacity-100' : 'opacity-0'
+                }`}
               />
               <span className="absolute left-1/2 top-1/2 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#eeeae2] shadow-[0_0_0_2px_rgba(0,0,0,0.7)]" />
             </div>
@@ -56,6 +60,12 @@ function VinylAlbumCarousel({ tracks }) {
           aria-label={`Show next song. Currently showing ${activeTrack.bestPick} by ${activeTrack.artist}`}
           className="group absolute -left-[4%] top-1/2 z-10 aspect-square w-[72%] -translate-y-1/2 overflow-hidden rounded-[4px] text-left shadow-[0_14px_30px_rgba(0,0,0,0.22)] outline-none focus-visible:ring-2 focus-visible:ring-foreground focus-visible:ring-offset-4"
         >
+          {!coverLoaded && (
+            <div
+              className="absolute inset-0 z-10 animate-pulse bg-[#DAD6D1]"
+              aria-hidden="true"
+            />
+          )}
           {previousTrack && (
             <img
               src={previousTrack.image}
@@ -71,6 +81,8 @@ function VinylAlbumCarousel({ tracks }) {
             alt={`${activeTrack.artist} album artwork for ${activeTrack.bestPick}`}
             draggable={false}
             className="album-cover-in pointer-events-none absolute inset-0 z-20 h-full w-full scale-[1.02] select-none object-cover transition-transform duration-300 group-hover:scale-[1.035] motion-reduce:transition-none"
+            onLoad={() => setLoadedCoverImage(activeTrack.image)}
+            onError={() => setLoadedCoverImage(activeTrack.image)}
           />
         </button>
       </div>

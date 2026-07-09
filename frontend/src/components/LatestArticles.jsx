@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { ChevronDown, Search, X } from "lucide-react";
+import { ChevronDown, Loader2, Search, SearchX, X } from "lucide-react";
 import ArticleCard from "./ArticleCard";
 import ArticleCardSkeleton from "./ArticleCardSkeleton";
 import { mockCategories, searchMockPosts } from "../data/mockPosts";
@@ -12,6 +12,8 @@ import {
 } from "../services/articleAdminService";
 
 const API_BASE = "https://blog-post-project-api-with-db.vercel.app";
+const PAGE_SIZE = 6;
+const SEARCH_MAX_LENGTH = 80;
 
 function LatestArticles() {
   const navigate = useNavigate();
@@ -41,16 +43,20 @@ function LatestArticles() {
     const fetchPosts = () => {
       if (useMockData || hasAdminArticleStore()) {
         return Promise.resolve(
-          getPublishedAdminArticlesByCategory(selectedCategory, page, 6),
+          getPublishedAdminArticlesByCategory(selectedCategory, page, PAGE_SIZE),
         );
       }
 
       return axios
-        .get(`${API_BASE}/posts?page=${page}&limit=6`)
+        .get(`${API_BASE}/posts?page=${page}&limit=${PAGE_SIZE}`)
         .then((res) => res.data)
         .catch(() => {
           setUseMockData(true);
-          return getPublishedAdminArticlesByCategory(selectedCategory, page, 6);
+          return getPublishedAdminArticlesByCategory(
+            selectedCategory,
+            page,
+            PAGE_SIZE,
+          );
         });
     };
 
@@ -118,6 +124,7 @@ function LatestArticles() {
   const isInitialLoading = loading && page === 1 && posts.length === 0;
   const isLoadingMore = loading && posts.length > 0;
   const visiblePosts = keyword.trim() ? searchResults : posts;
+  const showSearchDropdown = searchOpen && Boolean(keyword.trim());
 
   const clearSearch = () => {
     setKeyword("");
@@ -219,9 +226,12 @@ function LatestArticles() {
                 type="text"
                 placeholder="Search"
                 value={keyword}
+                maxLength={SEARCH_MAX_LENGTH}
                 className="h-10 w-full rounded-[3px] border border-[#DEDBD6] bg-white px-3 pr-10 text-sm text-[#1F1F1F] outline-none transition-colors placeholder:text-[#8F8983] focus:border-[#9A948E]"
                 onChange={(e) => {
-                  setKeyword(e.target.value);
+                  const nextKeyword = e.target.value;
+
+                  setKeyword(nextKeyword);
                   setLoading(false);
                 }}
                 onFocus={() => setSearchOpen(true)}
@@ -230,23 +240,60 @@ function LatestArticles() {
                 }}
               />
 
-              {!loading &&
-                searchOpen &&
-                keyword.trim() &&
-                searchResults.length > 0 && (
-                  <div className="absolute right-0 z-20 mt-2 w-full overflow-hidden rounded-[3px] border border-[#DEDBD6] bg-white p-1 shadow-lg">
-                    {searchResults.map((post) => (
-                      <button
-                        key={post.id}
-                        type="button"
-                        className="block w-full rounded-[2px] px-3 py-2 text-left text-sm text-[#2B2825] transition-colors hover:bg-[#EFEEEB] hover:text-black"
-                        onClick={() => navigate(`/post/${post.id}`)}
-                      >
-                        {post.title}
-                      </button>
-                    ))}
-                  </div>
-                )}
+              {showSearchDropdown && (
+                <div className="absolute right-0 z-20 mt-2 w-full overflow-hidden rounded-[3px] border border-[#DEDBD6] bg-white shadow-lg md:w-[420px]">
+                  {searchResults.length > 0 ? (
+                    <>
+                      <div className="border-b border-[#EFEEEB] px-3 py-2.5">
+                        <p className="flex items-center justify-between gap-3 text-xs font-semibold uppercase tracking-[0.12em] text-[#7A746E]">
+                          Related articles
+                          <span className="shrink-0 tracking-normal text-[#8F8983]">
+                            {searchResults.length} result
+                            {searchResults.length > 1 ? "s" : ""}
+                          </span>
+                        </p>
+                        <p className="mt-1 truncate text-xs text-[#8F8983]">
+                          Search related to &quot;{keyword.trim()}&quot;
+                        </p>
+                      </div>
+                      <div className="max-h-72 overflow-y-auto p-1">
+                        {searchResults.map((post) => (
+                          <button
+                            key={post.id}
+                            type="button"
+                            className="block w-full rounded-[2px] px-3 py-2.5 text-left transition-colors hover:bg-[#EFEEEB] hover:text-black"
+                            onClick={() => navigate(`/post/${post.id}`)}
+                          >
+                            <span className="block truncate text-sm font-medium text-[#2B2825]">
+                              {post.title}
+                            </span>
+                            {post.description && (
+                              <span className="mt-1 line-clamp-2 text-xs leading-5 text-[#7A746E]">
+                                {post.description}
+                              </span>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex items-start gap-3 px-3 py-4">
+                      <SearchX
+                        className="mt-0.5 h-4 w-4 shrink-0 text-[#8F8983]"
+                        aria-hidden="true"
+                      />
+                      <div>
+                        <p className="text-sm font-medium text-[#2B2825]">
+                          No matches found
+                        </p>
+                        <p className="mt-1 text-xs leading-5 text-[#7A746E]">
+                          Try another artist, song, or category.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -254,7 +301,7 @@ function LatestArticles() {
 
       {isInitialLoading ? (
         <div className="grid grid-cols-1 gap-x-8 gap-y-12 md:grid-cols-2">
-          {Array.from({ length: 6 }, (_, i) => (
+          {Array.from({ length: PAGE_SIZE }, (_, i) => (
             <ArticleCardSkeleton key={i} />
           ))}
         </div>
@@ -275,12 +322,22 @@ function LatestArticles() {
           ))}
 
           {isLoadingMore &&
-            Array.from({ length: 2 }, (_, i) => (
+            Array.from({ length: PAGE_SIZE }, (_, i) => (
               <ArticleCardSkeleton key={`loading-${i}`} />
             ))}
         </div>
       ) : (
-        <p className="text-muted-foreground">No articles found.</p>
+        <div className="mx-auto flex max-w-sm flex-col items-center py-16 text-center">
+          <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full bg-[#EFEEEB] text-[#7A746E]">
+            <SearchX className="h-6 w-6" aria-hidden="true" />
+          </div>
+          <h3 className="font-display text-2xl font-medium text-[#171717]">
+            No articles found
+          </h3>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">
+            Try a different keyword or choose another category.
+          </p>
+        </div>
       )}
 
       {hasMore && !isInitialLoading && !keyword.trim() && (
@@ -291,12 +348,13 @@ function LatestArticles() {
               setLoading(true);
               setPage((p) => p + 1);
             }}
-            className={`font-medium transition-colors ${
+            className={`inline-flex items-center justify-center gap-2 font-medium transition-colors ${
               loading ? "" : "underline hover:text-muted-foreground"
             }`}
             disabled={loading}
           >
-            View more
+            {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+            {loading ? "Loading more..." : "View more"}
           </button>
         </div>
       )}

@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import { getCategoryTagStyles } from "../utils/categoryStyles";
 
 function ArticleCard({
@@ -12,6 +13,8 @@ function ArticleCard({
   date,
 }) {
   const postPath = `/post/${id}`;
+  const [loadedImage, setLoadedImage] = useState(null);
+  const imageLoaded = loadedImage === image;
 
   return (
     <article className="flex flex-col gap-4">
@@ -19,11 +22,21 @@ function ArticleCard({
         to={postPath}
         className="relative block aspect-[1.65/1] overflow-hidden rounded-md"
       >
+        {!imageLoaded && (
+          <div
+            className="skeleton-shimmer absolute inset-0 z-10"
+            aria-hidden="true"
+          />
+        )}
         <img
-          className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+          className={`h-full w-full object-cover transition-transform duration-300 hover:scale-105 ${
+            imageLoaded ? "opacity-100" : "opacity-0"
+          }`}
           src={image}
           alt={title}
           loading="lazy"
+          onLoad={() => setLoadedImage(image)}
+          onError={() => setLoadedImage(image)}
         />
         {category && (
           <span

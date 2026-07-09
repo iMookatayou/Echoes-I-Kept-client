@@ -99,6 +99,16 @@ body {
   }
 }
 
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 .vinyl-record {
   background:
     radial-gradient(
@@ -118,9 +128,22 @@ body {
   animation: album-cover-in 360ms ease-out both;
 }
 
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    #dad6d1 0%,
+    #e7e4df 45%,
+    #d8d3cd 72%,
+    #dad6d1 100%
+  );
+  background-size: 220% 100%;
+  animation: skeleton-shimmer 2.4s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .vinyl-spin,
-  .album-cover-in {
+  .album-cover-in,
+  .skeleton-shimmer {
     animation: none;
   }
 }

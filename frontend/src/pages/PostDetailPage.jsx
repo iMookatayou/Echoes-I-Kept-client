@@ -1,5 +1,6 @@
 import { Fragment, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
+import { FileQuestion } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import AuthorSidebar from "../components/AuthorSidebar";
@@ -72,10 +73,16 @@ function PostDetailPage() {
       <div className={pageShellClassName} onDragStart={preventImageDrag}>
         <Navbar />
         <main className="flex flex-grow items-center justify-center px-4">
-          <div className="max-w-md text-center">
-            <h1 className="text-3xl font-bold">Article not found</h1>
-            <p className="mt-3 text-muted-foreground">
-              The article you are looking for is not available.
+          <div className="flex max-w-md flex-col items-center text-center">
+            <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-[#EFEEEB] text-[#7A746E]">
+              <FileQuestion className="h-7 w-7" aria-hidden="true" />
+            </div>
+            <h1 className="font-display text-3xl font-medium">
+              Article not found
+            </h1>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              The article you are looking for is not available or has been
+              removed.
             </p>
           </div>
         </main>
@@ -106,6 +113,7 @@ function PostDetailContent({ post, postId, detailImageSource }) {
   const [comments, setComments] = useState(() =>
     getMockCommentsByPostId(postId),
   );
+  const [loadedHeroImage, setLoadedHeroImage] = useState(null);
 
   const handleLike = () => {
     setLikesAmount((prev) => prev + 1);
@@ -126,6 +134,7 @@ function PostDetailContent({ post, postId, detailImageSource }) {
   const dateString = post.date;
   const heroImage = getPostHeroImage(post, detailImageSource);
   const heroImagePosition = getPostHeroImagePosition(post, detailImageSource);
+  const heroImageLoaded = loadedHeroImage === heroImage;
   const author = {
     name: post.author,
     profilePic: post.authorAvatar,
@@ -137,13 +146,23 @@ function PostDetailContent({ post, postId, detailImageSource }) {
         <div className="max-w-7xl mx-auto space-y-8 container md:px-8 pb-20 md:pb-28 md:pt-8 lg:pt-16">
           <div className="space-y-4 md:px-4">
             {heroImage && (
-              <div className="overflow-hidden md:rounded-lg w-full h-[260px] sm:h-[340px] md:h-[587px]">
+              <div className="relative h-[260px] w-full overflow-hidden md:rounded-lg sm:h-[340px] md:h-[587px]">
+                {!heroImageLoaded && (
+                  <div
+                    className="skeleton-shimmer absolute inset-0 z-10"
+                    aria-hidden="true"
+                  />
+                )}
                 <img
                   src={heroImage}
                   alt={post.title}
                   draggable={false}
-                  className="w-full h-full object-cover"
+                  className={`h-full w-full object-cover transition-opacity duration-300 ${
+                    heroImageLoaded ? "opacity-100" : "opacity-0"
+                  }`}
                   style={{ objectPosition: heroImagePosition }}
+                  onLoad={() => setLoadedHeroImage(heroImage)}
+                  onError={() => setLoadedHeroImage(heroImage)}
                 />
               </div>
             )}
