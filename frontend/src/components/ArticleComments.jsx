@@ -29,7 +29,10 @@ function ArticleComments({ comments = [], onAddComment }) {
     }
 
     setError(false)
-    onAddComment(commentText.trim())
+    const added = onAddComment(commentText.trim())
+
+    if (added === false) return
+
     setCommentText('')
   }
 
