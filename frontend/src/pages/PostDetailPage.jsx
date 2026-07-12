@@ -1,4 +1,5 @@
-import { Fragment, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import ReactMarkdown from "react-markdown";
 import { useParams } from "react-router-dom";
 import { FileQuestion } from "lucide-react";
 import Navbar from "../components/Navbar";
@@ -6,6 +7,7 @@ import Footer from "../components/Footer";
 import AuthorSidebar from "../components/AuthorSidebar";
 import ArticleLikeShare from "../components/ArticleLikeShare";
 import ArticleComments from "../components/ArticleComments";
+import AuthRequiredDialog from "../components/ui/AuthRequiredDialog";
 import {
   getMockPostById,
   getMockLikesAmount,
@@ -13,11 +15,11 @@ import {
   getPostHeroImage,
   getPostHeroImagePosition,
 } from "../data/mockPosts";
-import { getMockUserById } from "../data/mockUsers";
 import {
   getPublishedAdminArticleById,
   hasAdminArticleStore,
 } from "../services/articleAdminService";
+import { useAuth } from "../context/useAuth";
 import { getCategoryTextStyles } from "../utils/categoryStyles";
 
 const pageShellClassName = "no-image-drag flex flex-col min-h-screen";
@@ -26,35 +28,10 @@ function preventImageDrag(e) {
   if (e.target instanceof HTMLImageElement) e.preventDefault();
 }
 
-function renderContent(content) {
+function toMarkdownContent(content) {
   if (!content) return null;
 
-  const paragraphs = content
-    .replace(/\n(?=\d+\.\s)/g, "\n\n")
-    .split(/\n{2,}/)
-    .map((p) => p.trim())
-    .filter(Boolean);
-
-  return paragraphs.map((p, idx) => {
-    const sectionMatch = p.match(/^(\d+\.\s[^\n]+)(?:\n([\s\S]+))?$/);
-
-    if (sectionMatch) {
-      const [, heading, body] = sectionMatch;
-
-      return (
-        <Fragment key={idx}>
-          <h2 className="font-display mb-4 mt-8 text-2xl font-medium">{heading}</h2>
-          {body && <p className="mb-4 whitespace-pre-wrap">{body}</p>}
-        </Fragment>
-      );
-    }
-
-    return (
-      <p key={idx} className="mb-4 whitespace-pre-wrap">
-        {p}
-      </p>
-    );
-  });
+  return content.replace(/(^|\n)(\d+\.\s[^\n]+)/g, "$1## $2");
 }
 
 function PostDetailPage() {
@@ -106,7 +83,9 @@ function PostDetailPage() {
 }
 
 function PostDetailContent({ post, postId, detailImageSource }) {
+  const { state, isAuthenticated } = useAuth();
   const content = post.content || "";
+  const currentUser = state.user;
   const [likesAmount, setLikesAmount] = useState(() =>
     getMockLikesAmount(postId),
   );
@@ -114,13 +93,24 @@ function PostDetailContent({ post, postId, detailImageSource }) {
     getMockCommentsByPostId(postId),
   );
   const [loadedHeroImage, setLoadedHeroImage] = useState(null);
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+
+  const requireLogin = () => {
+    if (isAuthenticated) return true;
+
+    setLoginDialogOpen(true);
+    return false;
+  };
 
   const handleLike = () => {
+    if (!requireLogin()) return;
+
     setLikesAmount((prev) => prev + 1);
   };
 
   const handleAddComment = (text) => {
-    const currentUser = getMockUserById(1);
+    if (!requireLogin()) return false;
+
     const newComment = {
       id: Date.now(),
       name: currentUser?.name || "You",
@@ -129,6 +119,7 @@ function PostDetailContent({ post, postId, detailImageSource }) {
       created_at: new Date().toISOString(),
     };
     setComments((prev) => [newComment, ...prev]);
+    return true;
   };
 
   const dateString = post.date;
@@ -194,7 +185,7 @@ function PostDetailContent({ post, postId, detailImageSource }) {
                 </p>
 
                 <div className="markdown font-sans text-[15px] leading-[1.55]">
-                  {renderContent(content)}
+                  <ReactMarkdown>{toMarkdownContent(content)}</ReactMarkdown>
                 </div>
               </article>
 
@@ -217,6 +208,10 @@ function PostDetailContent({ post, postId, detailImageSource }) {
             </div>
           </div>
         </div>
+
+        {loginDialogOpen && (
+          <AuthRequiredDialog onClose={() => setLoginDialogOpen(false)} />
+        )}
       </main>
   );
 }

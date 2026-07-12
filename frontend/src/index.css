@@ -155,6 +155,49 @@ body {
   user-select: none;
 }
 
+.markdown h1,
+.markdown h2,
+.markdown h3 {
+  font-family: var(--font-display);
+  color: hsl(var(--foreground));
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.markdown h2 {
+  margin: 2rem 0 1rem;
+  font-size: 1.5rem;
+}
+
+.markdown h3 {
+  margin: 1.5rem 0 0.75rem;
+  font-size: 1.25rem;
+}
+
+.markdown p {
+  margin-bottom: 1rem;
+  color: hsl(var(--foreground) / 0.78);
+  white-space: pre-wrap;
+}
+
+.markdown ul,
+.markdown ol {
+  margin: 0 0 1rem 1.25rem;
+  color: hsl(var(--foreground) / 0.78);
+}
+
+.markdown ul {
+  list-style: disc;
+}
+
+.markdown ol {
+  list-style: decimal;
+}
+
+.markdown li + li {
+  margin-top: 0.35rem;
+}
+
 .auth-form-panel {
   min-height: 700px;
   min-width: 0;
