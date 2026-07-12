@@ -1,5 +1,5 @@
 import { Copy, Heart } from 'lucide-react'
-import BrandIcon from './BrandIcon'
+import BrandIcon from './ui/BrandIcon'
 
 function ArticleLikeShare({ likesAmount, onLike }) {
   const shareUrl = encodeURI(window.location.href)
