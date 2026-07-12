@@ -14,6 +14,7 @@ import AdminMemberManagementPage from "./pages/AdminMemberManagementPage";
 import AdminNotificationPage from "./pages/AdminNotificationPage";
 import ProfilePage from "./pages/ProfilePage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import NotFoundPage from "./pages/NotFoundPage";
 
 function App() {
   return (
@@ -115,6 +116,7 @@ function App() {
               </GuestRoute>
             }
           />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
