@@ -11,13 +11,13 @@ app.use(express.json());
 app.get("/", (_req, res) => {
   res.json({
     ok: true,
-    service: "backend",
+    service: "server",
     endpoints: ["/health", "/health/db"],
   });
 });
 
 app.get("/health", (_req, res) => {
-  res.json({ ok: true, service: "backend" });
+  res.json({ ok: true, service: "server" });
 });
 
 app.get("/health/db", async (_req, res) => {
@@ -25,7 +25,7 @@ app.get("/health/db", async (_req, res) => {
     return res.status(500).json({
       ok: false,
       database: "missing_config",
-      message: "Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in backend/.env",
+      message: "Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in server/.env",
     });
   }
 
@@ -46,5 +46,5 @@ app.get("/health/db", async (_req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Backend listening on http://localhost:${port}`);
+  console.log(`Server listening on http://localhost:${port}`);
 });

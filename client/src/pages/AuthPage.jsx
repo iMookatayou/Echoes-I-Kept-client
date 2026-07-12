@@ -96,7 +96,7 @@ function SubmitButton({ children, loading }) {
 }
 
 function GoogleAuthButton() {
-  // TODO: Connect this button to Google OAuth when backend authentication is ready.
+  // TODO: Connect this button to Google OAuth when server authentication is ready.
   const handleGoogleAuth = () => {};
 
   return (

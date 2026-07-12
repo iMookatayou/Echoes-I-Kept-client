@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ChevronDown, Loader2, Search, SearchX, X } from "lucide-react";
 import ArticleCard from "./ArticleCard";
-import ArticleCardSkeleton from "./ArticleCardSkeleton";
+import ArticleCardSkeleton from "./ui/ArticleCardSkeleton";
 import { mockCategories, searchMockPosts } from "../data/mockPosts";
 import {
   getPublishedAdminArticlesByCategory,
