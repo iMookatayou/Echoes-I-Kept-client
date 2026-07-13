@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "sonner";
 import { AuthProvider } from "./context/AuthContext";
 import ScrollToTop from "./components/ScrollToTop";
 import AdminRoute from "./components/AdminRoute";
@@ -21,6 +22,19 @@ function App() {
     <BrowserRouter>
       <ScrollToTop />
       <AuthProvider>
+        <Toaster
+          closeButton
+          position="top-right"
+          swipeDirections={["right"]}
+          toastOptions={{
+            classNames: {
+              toast: "app-toast",
+              title: "app-toast-title",
+              description: "app-toast-description",
+              closeButton: "app-toast-close",
+            },
+          }}
+        />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/post/:postId" element={<PostDetailPage />} />

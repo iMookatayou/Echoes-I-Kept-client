@@ -1,11 +1,21 @@
 import { Copy, Heart } from 'lucide-react'
+import { toast } from 'sonner'
 import BrandIcon from './ui/BrandIcon'
 
 function ArticleLikeShare({ likesAmount, onLike }) {
   const shareUrl = encodeURI(window.location.href)
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(window.location.href)
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href)
+      toast.success('Copied to clipboard', {
+        description: 'This article link is ready to share.',
+      })
+    } catch {
+      toast.error('Unable to copy link', {
+        description: 'Please copy the URL from your browser instead.',
+      })
+    }
   }
 
   return (
