@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 import AuthContext from './AuthContextCore'
 import * as authService from '../services/authService'
 
@@ -30,17 +31,19 @@ export function AuthProvider({ children }) {
     }
   }
 
-  const signup = async (data) => {
+  const signup = async (data, options = {}) => {
+    const shouldAutoLogin = options.autoLogin !== false
+
     try {
       setState((prev) => ({ ...prev, loading: true, error: null }))
-      const result = await authService.signup(data)
+      const result = await authService.signup(data, { persist: shouldAutoLogin })
       setState((prev) => ({
         ...prev,
-        user: result.user,
+        user: shouldAutoLogin ? result.user : prev.user,
         loading: false,
         error: null,
       }))
-      return null
+      return { user: result.user }
     } catch (err) {
       const message = err.response?.data?.error || 'Sign up failed'
       setState((prev) => ({ ...prev, loading: false, error: message }))
@@ -77,6 +80,9 @@ export function AuthProvider({ children }) {
   const logout = () => {
     authService.logout()
     setState({ user: null, loading: false, error: null, getUserLoading: false })
+    toast.success('Logged out', {
+      description: 'You have signed out of your listening journal.',
+    })
     navigate('/')
   }
 
