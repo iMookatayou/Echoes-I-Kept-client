@@ -223,7 +223,10 @@ export async function login({ email, password, role }) {
   return persistSession(user)
 }
 
-export async function signup({ name, username, email, password }) {
+export async function signup(
+  { name, username, email, password },
+  { persist = true } = {},
+) {
   await delay(500)
 
   if (password.length < 6) {
@@ -246,7 +249,7 @@ export async function signup({ name, username, email, password }) {
   registered.push(newUser)
   saveRegisteredUsers(registered)
 
-  return persistSession(newUser)
+  return persist ? persistSession(newUser) : { user: newUser }
 }
 
 export async function updateProfile({ name, username, email, profilePic }) {
