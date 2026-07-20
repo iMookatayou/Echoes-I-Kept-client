@@ -1,6 +1,5 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { ChevronDown, Loader2, Search, SearchX, X } from "lucide-react";
 import ArticleCard from "./ArticleCard";
 import ArticleCardSkeleton from "./ui/ArticleCardSkeleton";
@@ -10,8 +9,8 @@ import {
   hasAdminArticleStore,
   searchPublishedAdminArticles,
 } from "../services/articleAdminService";
+import { fetchPublishedPosts } from "../services/postsService";
 
-const API_BASE = "https://blog-post-project-api-with-db.vercel.app";
 const PAGE_SIZE = 6;
 const SEARCH_MAX_LENGTH = 80;
 
@@ -47,17 +46,18 @@ function LatestArticles() {
         );
       }
 
-      return axios
-        .get(`${API_BASE}/posts?page=${page}&limit=${PAGE_SIZE}`)
-        .then((res) => res.data)
-        .catch(() => {
-          setUseMockData(true);
-          return getPublishedAdminArticlesByCategory(
-            selectedCategory,
-            page,
-            PAGE_SIZE,
-          );
-        });
+      return fetchPublishedPosts({
+        page,
+        limit: PAGE_SIZE,
+        category: selectedCategory,
+      }).catch(() => {
+        setUseMockData(true);
+        return getPublishedAdminArticlesByCategory(
+          selectedCategory,
+          page,
+          PAGE_SIZE,
+        );
+      });
     };
 
     fetchPosts().then((result) => {
@@ -75,13 +75,36 @@ function LatestArticles() {
     };
   }, [page, selectedCategory, useMockData]);
 
-  const searchResults = useMemo(() => {
-    if (!keyword.trim()) return [];
+  const [searchResults, setSearchResults] = useState([]);
 
-    return hasAdminArticleStore()
-      ? searchPublishedAdminArticles(keyword)
-      : searchMockPosts(keyword);
-  }, [keyword]);
+  useEffect(() => {
+    const trimmed = keyword.trim();
+    if (!trimmed) return;
+
+    let cancelled = false;
+
+    const runSearch = () => {
+      if (useMockData || hasAdminArticleStore()) {
+        return Promise.resolve(
+          hasAdminArticleStore()
+            ? searchPublishedAdminArticles(trimmed)
+            : searchMockPosts(trimmed),
+        );
+      }
+
+      return fetchPublishedPosts({ search: trimmed, limit: 10 })
+        .then((result) => result.posts)
+        .catch(() => searchMockPosts(trimmed));
+    };
+
+    runSearch().then((results) => {
+      if (!cancelled) setSearchResults(results);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [keyword, useMockData]);
 
   useLayoutEffect(() => {
     const updateIndicator = () => {

@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { useParams } from "react-router-dom";
-import { FileQuestion } from "lucide-react";
+import { FileQuestion, Loader2 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import AuthorSidebar from "../components/AuthorSidebar";
@@ -19,6 +19,7 @@ import {
   getPublishedAdminArticleById,
   hasAdminArticleStore,
 } from "../services/articleAdminService";
+import { fetchPublishedPostById } from "../services/postsService";
 import { useAuth } from "../context/useAuth";
 import { getCategoryTextStyles } from "../utils/categoryStyles";
 
@@ -37,48 +38,79 @@ function toMarkdownContent(content) {
 function PostDetailPage() {
   const { postId } = useParams();
   const detailImageSource = useMemo(() => getMockPostById(postId), [postId]);
-  const post = useMemo(() => {
-    if (hasAdminArticleStore()) {
-      return getPublishedAdminArticleById(postId);
-    }
-
-    return detailImageSource;
-  }, [postId, detailImageSource]);
-
-  if (!post) {
-    return (
-      <div className={pageShellClassName} onDragStart={preventImageDrag}>
-        <Navbar />
-        <main className="flex flex-grow items-center justify-center px-4">
-          <div className="flex max-w-md flex-col items-center text-center">
-            <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-[#EFEEEB] text-[#7A746E]">
-              <FileQuestion className="h-7 w-7" aria-hidden="true" />
-            </div>
-            <h1 className="font-display text-3xl font-medium">
-              Article not found
-            </h1>
-            <p className="mt-3 text-sm leading-6 text-muted-foreground">
-              The article you are looking for is not available or has been
-              removed.
-            </p>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
     <div className={pageShellClassName} onDragStart={preventImageDrag}>
       <Navbar />
-      <PostDetailContent
+      <PostDetailBody
         key={postId}
-        post={post}
         postId={postId}
         detailImageSource={detailImageSource}
       />
       <Footer />
     </div>
+  );
+}
+
+function PostDetailBody({ postId, detailImageSource }) {
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const resolvePost = () => {
+      if (hasAdminArticleStore()) {
+        return Promise.resolve(getPublishedAdminArticleById(postId));
+      }
+
+      return fetchPublishedPostById(postId).catch(() => detailImageSource);
+    };
+
+    resolvePost().then((result) => {
+      if (cancelled) return;
+      setPost(result);
+      setLoading(false);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [postId, detailImageSource]);
+
+  if (loading) {
+    return (
+      <main className="flex flex-grow items-center justify-center px-4">
+        <Loader2 className="h-6 w-6 animate-spin text-[#7A746E]" aria-hidden="true" />
+      </main>
+    );
+  }
+
+  if (!post) {
+    return (
+      <main className="flex flex-grow items-center justify-center px-4">
+        <div className="flex max-w-md flex-col items-center text-center">
+          <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-[#EFEEEB] text-[#7A746E]">
+            <FileQuestion className="h-7 w-7" aria-hidden="true" />
+          </div>
+          <h1 className="font-display text-3xl font-medium">
+            Article not found
+          </h1>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">
+            The article you are looking for is not available or has been
+            removed.
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <PostDetailContent
+      post={post}
+      postId={postId}
+      detailImageSource={detailImageSource}
+    />
   );
 }
 
