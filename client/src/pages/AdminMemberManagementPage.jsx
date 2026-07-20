@@ -16,6 +16,7 @@ import {
   updateAdminMember,
 } from '../services/authService'
 import { useAuth } from '../context/useAuth'
+import { getPasswordStrengthError } from '../utils/passwordValidation'
 
 const emptyForm = {
   name: '',
@@ -111,8 +112,9 @@ function AdminMemberManagementPage() {
 
     if (!editingMember && !form.password.trim()) {
       next.password = 'Password is required.'
-    } else if (form.password && form.password.length < 6) {
-      next.password = 'Password must be at least 6 characters.'
+    } else if (form.password) {
+      const passwordError = getPasswordStrengthError(form.password)
+      if (passwordError) next.password = passwordError
     }
 
     if (!['admin', 'user'].includes(form.role)) {
@@ -310,7 +312,7 @@ function AdminMemberManagementPage() {
                 onChange={(event) => updateForm('password', event.target.value)}
                 className="h-10 w-full rounded-sm border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:border-muted-foreground"
                 placeholder={
-                  isEditing ? 'Leave blank to keep current password' : 'Password'
+                  isEditing ? 'Leave blank to keep current password' : 'At least 8 characters, including .'
                 }
               />
               {errors.password && (

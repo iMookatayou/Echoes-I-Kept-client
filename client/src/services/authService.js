@@ -1,4 +1,5 @@
 import { avatarUrl, mockUsers } from '../data/mockUsers'
+import { getPasswordStrengthError } from '../utils/passwordValidation'
 
 const TOKEN_KEY = 'token'
 const USER_KEY = 'mockUser'
@@ -229,8 +230,9 @@ export async function signup(
 ) {
   await delay(500)
 
-  if (password.length < 6) {
-    throw createError('Password must be at least 6 characters')
+  const passwordError = getPasswordStrengthError(password)
+  if (passwordError) {
+    throw createError(passwordError)
   }
 
   validateUniqueUserFields({ email, username })
@@ -272,8 +274,9 @@ export async function resetPassword({ currentPassword, newPassword }) {
 
   const currentUser = getCurrentFullUser()
 
-  if (newPassword.length < 6) {
-    throw createError('Password must be at least 6 characters')
+  const passwordError = getPasswordStrengthError(newPassword)
+  if (passwordError) {
+    throw createError(passwordError)
   }
 
   if (currentUser.password !== currentPassword) {
@@ -323,8 +326,9 @@ export function getAdminMembers() {
 export function createAdminMember({ name, username, email, password, role, profilePic }) {
   requireAdmin()
 
-  if (password.length < 6) {
-    throw createError('Password must be at least 6 characters')
+  const passwordError = getPasswordStrengthError(password)
+  if (passwordError) {
+    throw createError(passwordError)
   }
 
   validateUniqueUserFields({ email, username })
@@ -360,8 +364,9 @@ export function updateAdminMember(
     throw createError('Member not found', 404)
   }
 
-  if (password && password.length < 6) {
-    throw createError('Password must be at least 6 characters')
+  const passwordError = password ? getPasswordStrengthError(password) : ''
+  if (passwordError) {
+    throw createError(passwordError)
   }
 
   if (

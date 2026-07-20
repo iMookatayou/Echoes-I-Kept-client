@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { User, X } from 'lucide-react'
+import { User } from 'lucide-react'
+import { toast } from 'sonner'
 import AccountLayout from '../components/AccountLayout'
 import { useAuth } from '../context/useAuth'
 
@@ -16,12 +17,10 @@ function ProfilePage() {
   const { state, updateProfile } = useAuth()
   const [form, setForm] = useState(() => getProfileForm(state.user))
   const [errors, setErrors] = useState({})
-  const [message, setMessage] = useState('')
 
   const updateField = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }))
     setErrors((prev) => ({ ...prev, [field]: '' }))
-    setMessage('')
   }
 
   const validate = () => {
@@ -68,10 +67,15 @@ function ProfilePage() {
 
     if (result?.error) {
       setErrors({ api: result.error })
+      toast.error('Unable to save profile', {
+        description: result.error,
+      })
       return
     }
 
-    setMessage('Your profile has been successfully updated')
+    toast.success('Saved profile', {
+      description: 'Your profile has been successfully updated.',
+    })
   }
 
   return (
@@ -171,23 +175,6 @@ function ProfilePage() {
           </button>
         </div>
       </form>
-
-      {message && (
-        <div className="fixed bottom-4 left-4 right-4 z-50 flex items-start justify-between gap-4 rounded-sm bg-[#12B279] px-5 py-4 text-white shadow-lg sm:bottom-8 sm:left-auto sm:right-8 sm:w-[700px] sm:max-w-[calc(100vw-64px)]">
-          <div>
-            <p className="text-sm font-bold">Saved profile</p>
-            <p className="mt-1 text-xs">{message}</p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setMessage('')}
-            className="rounded-full p-1 hover:bg-white/10"
-            aria-label="Close saved profile message"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-      )}
     </AccountLayout>
   )
 }

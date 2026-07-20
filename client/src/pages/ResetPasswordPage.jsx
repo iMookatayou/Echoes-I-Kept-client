@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { X } from 'lucide-react'
+import { toast } from 'sonner'
 import AccountLayout from '../components/AccountLayout'
 import { useAuth } from '../context/useAuth'
+import { getPasswordStrengthError } from '../utils/passwordValidation'
 
 function ResetPasswordPage() {
   const { state, resetPassword } = useAuth()
@@ -11,13 +13,11 @@ function ResetPasswordPage() {
     confirmPassword: '',
   })
   const [errors, setErrors] = useState({})
-  const [message, setMessage] = useState('')
   const [confirmOpen, setConfirmOpen] = useState(false)
 
   const updateField = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }))
     setErrors((prev) => ({ ...prev, [field]: '' }))
-    setMessage('')
   }
 
   const validate = () => {
@@ -29,8 +29,9 @@ function ResetPasswordPage() {
 
     if (!form.newPassword) {
       next.newPassword = 'New password is required.'
-    } else if (form.newPassword.length < 6) {
-      next.newPassword = 'New password must be at least 6 characters.'
+    } else {
+      const passwordError = getPasswordStrengthError(form.newPassword)
+      if (passwordError) next.newPassword = passwordError
     }
 
     if (!form.confirmPassword) {
@@ -58,12 +59,17 @@ function ResetPasswordPage() {
     if (result?.error) {
       setErrors({ api: result.error })
       setConfirmOpen(false)
+      toast.error('Unable to reset password', {
+        description: result.error,
+      })
       return
     }
 
     setForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
     setConfirmOpen(false)
-    setMessage('Password updated successfully.')
+    toast.success('Password updated', {
+      description: 'Your password has been successfully reset.',
+    })
   }
 
   return (
@@ -81,12 +87,6 @@ function ResetPasswordPage() {
             {errors.api}
           </div>
         )}
-        {message && (
-          <div className="mb-5 rounded-sm bg-green-500 p-3 text-sm font-medium text-white">
-            {message}
-          </div>
-        )}
-
         <div className="space-y-5 md:space-y-6">
           <label className="block space-y-1 md:space-y-2">
             <span className="text-xs font-medium text-muted-foreground">

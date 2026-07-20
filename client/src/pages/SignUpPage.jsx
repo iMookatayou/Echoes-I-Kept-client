@@ -4,6 +4,7 @@ import { Loader2 } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { useAuth } from '../context/useAuth'
+import { getPasswordStrengthError } from '../utils/passwordValidation'
 
 function SignUpPage() {
   const navigate = useNavigate()
@@ -39,8 +40,9 @@ function SignUpPage() {
 
     if (!form.password.trim()) {
       next.password = 'Password is required.'
-    } else if (form.password.length < 6) {
-      next.password = 'Password must be at least 6 characters.'
+    } else {
+      const passwordError = getPasswordStrengthError(form.password)
+      if (passwordError) next.password = passwordError
     }
 
     if (!form.confirmPassword.trim()) {
@@ -175,7 +177,7 @@ function SignUpPage() {
               <input
                 id="password"
                 type="password"
-                placeholder="Password"
+                placeholder="At least 8 characters, including ."
                 value={form.password}
                 onChange={(e) => handleChange('password', e.target.value)}
                 disabled={state.loading}
