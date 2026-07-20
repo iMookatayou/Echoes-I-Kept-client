@@ -18,6 +18,10 @@ dist-ssr
 .env.*
 .vercel
 
+# Claude Code / AI tooling workspace (solo project — not shared with a team)
+.claude/
+CLAUDE.md
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

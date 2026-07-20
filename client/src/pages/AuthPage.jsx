@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { getPasswordStrengthError } from "../utils/passwordValidation";
 import { useAuth } from "../context/useAuth";
 
 const emptyForm = {
@@ -37,6 +38,8 @@ const inputStyles =
   "h-12 w-full border-0 border-b border-black/20 bg-transparent pl-9 pr-3 text-sm outline-none transition-colors placeholder:text-black/35 focus:border-black disabled:cursor-not-allowed disabled:opacity-60";
 
 function Field({ error, icon: Icon, label, trailingAction, ...props }) {
+  const errorId = error ? `${props.id}-error` : undefined;
+
   return (
     <div>
       <div className="mb-1 flex items-center justify-between gap-4">
@@ -57,10 +60,20 @@ function Field({ error, icon: Icon, label, trailingAction, ...props }) {
         />
         <input
           {...props}
+          aria-invalid={Boolean(error)}
+          aria-describedby={errorId}
           className={`${inputStyles} ${error ? "border-red-500" : ""}`}
         />
       </div>
-      {error && <p className="mt-1.5 text-xs text-red-600">{error}</p>}
+      {error && (
+        <p
+          id={errorId}
+          className="mt-2 text-xs font-medium leading-relaxed text-[#9f3d32]"
+          role="alert"
+        >
+          {error}
+        </p>
+      )}
     </div>
   );
 }
@@ -174,8 +187,9 @@ function AuthPage() {
     else if (!/^[a-zA-Z0-9_]+$/.test(form.username)) {
       next.username = "Use only letters, numbers, and underscores.";
     }
-    if (form.password && form.password.length < 6) {
-      next.password = "Password must be at least 6 characters.";
+    if (form.password) {
+      const passwordError = getPasswordStrengthError(form.password);
+      if (passwordError) next.password = passwordError;
     }
     if (!form.confirmPassword.trim()) {
       next.confirmPassword = "Please confirm your password.";
@@ -543,34 +557,38 @@ function AuthPage() {
                         }
                       />
                     </div>
-                    <Field
-                      id="register-password"
-                      type="password"
-                      autoComplete="new-password"
-                      label="Password"
-                      placeholder="At least 6 characters"
-                      icon={LockKeyhole}
-                      value={form.password}
-                      error={errors.password}
-                      disabled={state.loading}
-                      onChange={(event) =>
-                        handleChange("password", event.target.value)
-                      }
-                    />
-                    <Field
-                      id="register-confirm-password"
-                      type="password"
-                      autoComplete="new-password"
-                      label="Confirm password"
-                      placeholder="Repeat password"
-                      icon={LockKeyhole}
-                      value={form.confirmPassword}
-                      error={errors.confirmPassword}
-                      disabled={state.loading}
-                      onChange={(event) =>
-                        handleChange("confirmPassword", event.target.value)
-                      }
-                    />
+                    <div className="sm:col-span-2">
+                      <Field
+                        id="register-password"
+                        type="password"
+                        autoComplete="new-password"
+                        label="Password"
+                        placeholder="At least 8 characters, including ."
+                        icon={LockKeyhole}
+                        value={form.password}
+                        error={errors.password}
+                        disabled={state.loading}
+                        onChange={(event) =>
+                          handleChange("password", event.target.value)
+                        }
+                      />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <Field
+                        id="register-confirm-password"
+                        type="password"
+                        autoComplete="new-password"
+                        label="Confirm password"
+                        placeholder="Repeat password"
+                        icon={LockKeyhole}
+                        value={form.confirmPassword}
+                        error={errors.confirmPassword}
+                        disabled={state.loading}
+                        onChange={(event) =>
+                          handleChange("confirmPassword", event.target.value)
+                        }
+                      />
+                    </div>
                     <div className="mt-2 sm:col-span-2">
                       <SubmitButton loading={state.loading}>Sign up</SubmitButton>
                     </div>
