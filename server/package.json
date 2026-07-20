@@ -1,0 +1,32 @@
+{
+  "name": "echoes-i-kept-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/app.js",
+  "scripts": {
+    "dev": "node --watch src/app.js",
+    "dev:local": "npm run db:env && node --env-file=.env.local --watch src/app.js",
+    "start": "node src/app.js",
+    "db:start": "supabase start",
+    "db:stop": "supabase stop",
+    "db:reset": "supabase db reset",
+    "db:env": "supabase status -o env > .env.local",
+    "db:push": "supabase db push",
+    "test:posts": "node scripts/smokePosts.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.108.2",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "multer": "^2.2.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "supabase": "^2.109.0"
+  }
+}

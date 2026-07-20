@@ -8,6 +8,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+.vite
 dist
 dist-ssr
 *.local
@@ -15,8 +16,11 @@ dist-ssr
 # Environment and deployment secrets
 .env
 .env.*
-!.env.example
 .vercel
+
+# Claude Code / AI tooling workspace (solo project — not shared with a team)
+.claude/
+CLAUDE.md
 
 # Editor directories and files
 .vscode/*
