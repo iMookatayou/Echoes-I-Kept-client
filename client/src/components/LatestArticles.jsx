@@ -10,6 +10,7 @@ import {
   searchPublishedAdminArticles,
 } from "../services/articleAdminService";
 import { fetchPublishedPosts } from "../services/postsService";
+import { fetchCategories } from "../services/categoriesService";
 
 const PAGE_SIZE = 6;
 const SEARCH_MAX_LENGTH = 80;
@@ -33,8 +34,23 @@ function LatestArticles() {
 
   const [useMockData, setUseMockData] = useState(false);
 
-  const displayCategories = mockCategories;
+  const [categories, setCategories] = useState(mockCategories);
+  const displayCategories = categories;
   const categoryKey = displayCategories.map((cat) => cat.name).join("|");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    fetchCategories()
+      .then((data) => {
+        if (!cancelled) setCategories(data);
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
